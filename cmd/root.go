@@ -17,10 +17,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
+	"kopy/internal"
 	"os"
+	"path/filepath"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/go-homedir"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -38,7 +41,13 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		client, err := internal.GetClient(filepath.Join(homeDir(), ".kube", "config"))
+		if err != nil {
+			logrus.Error(err)
+		}
+		logrus.Info(client)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -88,4 +97,11 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func homeDir() string {
+	if h := os.Getenv("HOME"); h != "" {
+		return h
+	}
+	return os.Getenv("USERPROFILE") // windows
 }
