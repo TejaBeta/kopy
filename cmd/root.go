@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Tejasvi Thota <tejasvi.thota@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,14 +17,17 @@ package cmd
 
 import (
 	"fmt"
-	"kopy/internal"
 	"os"
-	"path/filepath"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	namespace string
+	context   string
+	all       bool
 )
 
 var cfgFile string
@@ -32,22 +35,17 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "kopy",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "kopy is a kubectl plugin to copy resources",
+	Long: `kopy is a kubectl plugin to copy resources from one context to another context
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+kopy is a kubectl plugin or a cli to copy K8s resources
+from a particular namespace from the current context to
+another context. However, the context switching is kind
+of opinionated, as the tool requires all the contexts 
+within the same config.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
-		client, err := internal.GetClient(filepath.Join(homeDir(), ".kube", "config"))
-		if err != nil {
-			logrus.Error(err)
-		}
-		logrus.Info(client)
-	},
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -66,11 +64,12 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.kopy.yaml)")
-
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVar(&namespace, "ns", "default", "Namespace within the current context")
+	rootCmd.PersistentFlags().StringVar(&context, "context", "", "Context name to copy resources into")
+	rootCmd.PersistentFlags().BoolVar(&all, "a", false, "All the resources within the namespace")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -97,11 +96,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-func homeDir() string {
-	if h := os.Getenv("HOME"); h != "" {
-		return h
-	}
-	return os.Getenv("USERPROFILE") // windows
 }
