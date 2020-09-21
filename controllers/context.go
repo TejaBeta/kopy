@@ -41,7 +41,11 @@ func SwitchContext(context string) (*rest.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return clientcmd.NewNonInteractiveDeferredLoadingClientConfig(&clientcmd.ClientConfigLoadingRules{ExplicitPath: path}, &clientcmd.ConfigOverrides{CurrentContext: context}).ClientConfig()
+	return clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		&clientcmd.ClientConfigLoadingRules{ExplicitPath: path},
+		&clientcmd.ConfigOverrides{
+			CurrentContext: context,
+		}).ClientConfig()
 }
 
 func configPath() (string, error) {
