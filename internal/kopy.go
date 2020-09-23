@@ -19,5 +19,5 @@ import (
 )
 
 func Kopy(kopyOptions *options.KopyOptions) {
-	fetcher.GetResources(kopyOptions.CContext)
+	fetcher.GetResources(kopyOptions.CContext, kopyOptions.Namespace)
 }

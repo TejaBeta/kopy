@@ -14,11 +14,29 @@ limitations under the License.
 package fetcher
 
 import (
+	"context"
 	"fmt"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
-func GetResources(context *rest.Config) {
-	fmt.Println(context)
+func GetResources(context *rest.Config, ns string) {
+	clientset, err := kubernetes.NewForConfig(context)
+	if err != nil {
+		panic(err)
+	}
+	getDeployment(clientset, ns)
+}
+
+func getDeployment(clientset *kubernetes.Clientset, ns string) {
+	deploymentsClient := clientset.AppsV1().Deployments(ns)
+
+	result, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		panic(fmt.Errorf("Failed to get latest version of Deployment: %v", getErr))
+	}
+
+	fmt.Println(result)
 }
