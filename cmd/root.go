@@ -20,12 +20,15 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	kopy "github.com/tejabeta/kopy/internal"
+	"github.com/tejabeta/kopy/internal/options"
 )
 
 var (
-	namespace string
-	context   string
-	all       bool
+	namespace   string
+	context     string
+	all         bool
+	kopyOptions = options.GetKopyOptions(context)
 )
 
 var cfgFile string
@@ -43,7 +46,10 @@ of opinionated, as the tool requires all the contexts
 within the same config.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		kopyOptions = kopyOptions{Namespace: namespace, IsAll: all}
+		kopy.Kopy(kopyOptions)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
