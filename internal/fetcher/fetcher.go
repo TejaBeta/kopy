@@ -11,32 +11,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package options
+package fetcher
 
 import (
-	"kopy/internal/context"
+	"fmt"
 
 	"k8s.io/client-go/rest"
 )
 
-type KopyOptions struct {
-	Namespace string
-	IsAll     bool
-	CContext  *rest.Config
-	DContext  *rest.Config
-}
-
-func GetKopyOptions(c string) *KopyOptions {
-	cContext, err := context.GetContext()
-	if err != nil {
-		panic(err)
-	}
-	dContext, err := context.SwitchContext(c)
-	if err != nil {
-		panic(err)
-	}
-	return &KopyOptions{
-		CContext: cContext,
-		DContext: dContext,
-	}
+func GetResources(context *rest.Config) {
+	fmt.Println(context)
 }

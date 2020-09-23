@@ -15,19 +15,17 @@ package cmd
 
 import (
 	"fmt"
+	kopy "kopy/internal"
+	"kopy/internal/options"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	kopy "github.com/tejabeta/kopy/internal"
-	"github.com/tejabeta/kopy/internal/options"
 )
 
 var (
-	namespace   string
 	context     string
-	all         bool
 	kopyOptions = options.GetKopyOptions(context)
 )
 
@@ -47,7 +45,6 @@ within the same config.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		kopyOptions = kopyOptions{Namespace: namespace, IsAll: all}
 		kopy.Kopy(kopyOptions)
 	},
 }
@@ -64,9 +61,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&namespace, "ns", "default", "Namespace within the current context")
-	rootCmd.PersistentFlags().StringVar(&context, "context", "", "Context name to copy resources into")
-	rootCmd.PersistentFlags().BoolVar(&all, "a", false, "All the resources within the namespace")
+	rootCmd.Flags().StringVar(&kopyOptions.Namespace, "ns", "", "Namespace within the current context")
+	rootCmd.Flags().StringVarP(&context, "context", "c", "", "Context name to copy resources into(required)")
+	rootCmd.Flags().BoolVar(&kopyOptions.IsAll, "a", false, "All the resources within the namespace")
+	rootCmd.MarkFlagRequired("ns")
+	rootCmd.MarkFlagRequired("context")
 }
 
 // initConfig reads in config file and ENV variables if set.

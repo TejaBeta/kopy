@@ -1,4 +1,6 @@
 /*
+Copyright 2014 The Kubernetes Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -11,32 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package options
 
-import (
-	"kopy/internal/context"
-
-	"k8s.io/client-go/rest"
-)
-
-type KopyOptions struct {
-	Namespace string
-	IsAll     bool
-	CContext  *rest.Config
-	DContext  *rest.Config
-}
-
-func GetKopyOptions(c string) *KopyOptions {
-	cContext, err := context.GetContext()
-	if err != nil {
-		panic(err)
-	}
-	dContext, err := context.SwitchContext(c)
-	if err != nil {
-		panic(err)
-	}
-	return &KopyOptions{
-		CContext: cContext,
-		DContext: dContext,
-	}
-}
+// Package wait provides tools for polling or listening for changes
+// to a condition.
+package wait // import "k8s.io/apimachinery/pkg/util/wait"

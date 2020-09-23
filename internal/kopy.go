@@ -14,11 +14,10 @@ limitations under the License.
 package internal
 
 import (
-	"fmt"
-
-	"github.com/tejabeta/kopy/internal/options"
+	"kopy/internal/fetcher"
+	"kopy/internal/options"
 )
 
 func Kopy(kopyOptions *options.KopyOptions) {
-	fmt.Println(kopyOptions)
+	fetcher.GetResources(kopyOptions.CContext)
 }
