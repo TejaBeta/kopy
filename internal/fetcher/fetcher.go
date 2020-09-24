@@ -15,8 +15,10 @@ package fetcher
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -27,16 +29,25 @@ func GetResources(context *rest.Config, ns string) {
 	if err != nil {
 		panic(err)
 	}
-	getDeployment(clientset, ns)
+
+	deployments, err := getDeployments(clientset, ns)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(deployments)
 }
 
-func getDeployment(clientset *kubernetes.Clientset, ns string) {
+func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment, error) {
 	deploymentsClient := clientset.AppsV1().Deployments(ns)
 
-	result, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
+	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		panic(fmt.Errorf("Failed to get latest version of Deployment: %v", getErr))
 	}
 
-	fmt.Println(result)
+	if len(deploymentList.Items) == 0 {
+		return nil, errors.New("No deployments exists in the given namespace")
+	}
+
+	return deploymentList.Items, nil
 }
