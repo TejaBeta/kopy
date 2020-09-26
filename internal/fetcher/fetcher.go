@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -30,11 +32,22 @@ func GetResources(context *rest.Config, ns string) {
 		panic(err)
 	}
 
-	deployments, err := getDeployments(clientset, ns)
-	if err != nil {
-		panic(err)
+	if validateNS(clientset, ns) {
+		deployments, err := getDeployments(clientset, ns)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(deployments)
 	}
-	fmt.Println(deployments)
+}
+
+func validateNS(clientset *kubernetes.Clientset, name string) bool {
+	_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		log.Fatalln("Error while retrieving namespace: " + name)
+		return false
+	}
+	return true
 }
 
 func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment, error) {
