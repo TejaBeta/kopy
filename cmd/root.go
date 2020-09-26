@@ -15,9 +15,10 @@ package cmd
 
 import (
 	"fmt"
-	kopy "kopy/internal"
-	"kopy/internal/options"
 	"os"
+
+	kopy "github.com/tejabeta/kopy/internal"
+	"github.com/tejabeta/kopy/internal/options"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"

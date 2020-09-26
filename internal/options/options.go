@@ -14,7 +14,7 @@ limitations under the License.
 package options
 
 import (
-	"kopy/internal/context"
+	"github.com/tejabeta/kopy/internal/context"
 
 	"k8s.io/client-go/rest"
 )

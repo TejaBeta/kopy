@@ -13,7 +13,7 @@ limitations under the License.
 */
 package main
 
-import "kopy/cmd"
+import "github.com/tejabeta/kopy/cmd"
 
 func main() {
 	cmd.Execute()

@@ -14,8 +14,8 @@ limitations under the License.
 package internal
 
 import (
-	"kopy/internal/fetcher"
-	"kopy/internal/options"
+	"github.com/tejabeta/kopy/internal/fetcher"
+	"github.com/tejabeta/kopy/internal/options"
 )
 
 func Kopy(kopyOptions *options.KopyOptions) {
