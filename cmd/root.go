@@ -67,6 +67,7 @@ func init() {
 	rootCmd.Flags().BoolVar(&kopyOptions.IsAll, "a", false, "All the resources within the namespace")
 	rootCmd.MarkFlagRequired("ns")
 	rootCmd.MarkFlagRequired("context")
+	kopyOptions = options.GetKopyOptions(context)
 }
 
 // initConfig reads in config file and ENV variables if set.
