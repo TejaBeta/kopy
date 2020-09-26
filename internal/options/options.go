@@ -20,23 +20,23 @@ import (
 )
 
 type KopyOptions struct {
-	Namespace string
-	IsAll     bool
-	CContext  *rest.Config
-	DContext  *rest.Config
+	Namespace          string
+	AllResource        bool
+	CurrentContext     *rest.Config
+	DestinationContext *rest.Config
 }
 
-func GetKopyOptions(c string) (*KopyOptions, error) {
-	cContext, err := context.GetContext()
+func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
+	currentContext, err := context.GetContext()
 	if err != nil {
 		return nil, err
 	}
-	dContext, err := context.SwitchContext(c)
+	destinationContext, err := context.SwitchContext(DestContextName)
 	if err != nil {
 		return nil, err
 	}
 	return &KopyOptions{
-		CContext: cContext,
-		DContext: dContext,
+		CurrentContext:     currentContext,
+		DestinationContext: destinationContext,
 	}, err
 }
