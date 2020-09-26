@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -30,11 +32,23 @@ func GetResources(context *rest.Config, ns string) {
 		panic(err)
 	}
 
-	deployments, err := getDeployments(clientset, ns)
-	if err != nil {
-		panic(err)
+	if isValidateNS(clientset, ns) {
+		deployments, err := getDeployments(clientset, ns)
+		if err != nil {
+			log.Errorln(err, ns)
+			return
+		}
+		fmt.Println(deployments)
 	}
-	fmt.Println(deployments)
+}
+
+func isValidateNS(clientset *kubernetes.Clientset, name string) bool {
+	_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		log.Errorln(err)
+		return false
+	}
+	return true
 }
 
 func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment, error) {
@@ -42,11 +56,11 @@ func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment
 
 	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
-		panic(fmt.Errorf("Failed to get latest version of Deployment: %v", getErr))
+		return nil, getErr
 	}
 
 	if len(deploymentList.Items) == 0 {
-		return nil, errors.New("No deployments exists in the given namespace")
+		return nil, errors.New("No deployments exists in the given namespace: ")
 	}
 
 	return deploymentList.Items, nil

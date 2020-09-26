@@ -14,29 +14,29 @@ limitations under the License.
 package options
 
 import (
-	"kopy/internal/context"
+	"github.com/tejabeta/kopy/internal/context"
 
 	"k8s.io/client-go/rest"
 )
 
 type KopyOptions struct {
-	Namespace string
-	IsAll     bool
-	CContext  *rest.Config
-	DContext  *rest.Config
+	Namespace          string
+	AllResource        bool
+	CurrentContext     *rest.Config
+	DestinationContext *rest.Config
 }
 
-func GetKopyOptions(c string) *KopyOptions {
-	cContext, err := context.GetContext()
+func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
+	currentContext, err := context.GetContext()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	dContext, err := context.SwitchContext(c)
+	destinationContext, err := context.SwitchContext(DestContextName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &KopyOptions{
-		CContext: cContext,
-		DContext: dContext,
-	}
+		CurrentContext:     currentContext,
+		DestinationContext: destinationContext,
+	}, err
 }

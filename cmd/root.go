@@ -15,9 +15,11 @@ package cmd
 
 import (
 	"fmt"
-	kopy "kopy/internal"
-	"kopy/internal/options"
 	"os"
+
+	log "github.com/sirupsen/logrus"
+	k "github.com/tejabeta/kopy/internal"
+	"github.com/tejabeta/kopy/internal/options"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -25,8 +27,9 @@ import (
 )
 
 var (
-	context     string
-	kopyOptions = options.GetKopyOptions(context)
+	nameSpace   string
+	destContext string
+	allResource bool
 )
 
 var cfgFile string
@@ -45,8 +48,23 @@ within the same config.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		kopy.Kopy(kopyOptions)
+		if options, err := readKoptions(); err == nil {
+			k.Kopy(options)
+		} else {
+			log.Errorln(err)
+			return
+		}
 	},
+}
+
+func readKoptions() (*options.KopyOptions, error) {
+	options, err := options.GetKopyOptions(destContext)
+	if err != nil {
+		return nil, err
+	}
+	options.Namespace = nameSpace
+	options.AllResource = allResource
+	return options, nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -61,11 +79,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.Flags().StringVar(&kopyOptions.Namespace, "ns", "", "Namespace within the current context")
-	rootCmd.Flags().StringVarP(&context, "context", "c", "", "Context name to copy resources into(required)")
-	rootCmd.Flags().BoolVar(&kopyOptions.IsAll, "a", false, "All the resources within the namespace")
+	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace within the current context")
+	rootCmd.Flags().StringVarP(&destContext, "destination-context", "d", "", "Destination Context name to copy resources into(required)")
+	rootCmd.Flags().BoolVar(&allResource, "a", false, "All the resources within the namespace")
 	rootCmd.MarkFlagRequired("ns")
-	rootCmd.MarkFlagRequired("context")
+	rootCmd.MarkFlagRequired("destination-context")
 }
 
 // initConfig reads in config file and ENV variables if set.
