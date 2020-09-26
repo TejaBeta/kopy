@@ -13,8 +13,16 @@ limitations under the License.
 */
 package main
 
-import "github.com/tejabeta/kopy/cmd"
+import (
+	log "github.com/sirupsen/logrus"
+	"github.com/tejabeta/kopy/cmd"
+)
 
 func main() {
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: false,
+		FullTimestamp: true,
+	})
+	log.SetReportCaller(true)
 	cmd.Execute()
 }
