@@ -17,7 +17,8 @@ import (
 	"fmt"
 	"os"
 
-	kopy "github.com/tejabeta/kopy/internal"
+	log "github.com/sirupsen/logrus"
+	k "github.com/tejabeta/kopy/internal"
 	"github.com/tejabeta/kopy/internal/options"
 
 	"github.com/mitchellh/go-homedir"
@@ -27,7 +28,7 @@ import (
 
 var (
 	context     string
-	kopyOptions = options.GetKopyOptions(context)
+	kopyOptions = options.KopyOptions{}
 )
 
 var cfgFile string
@@ -46,8 +47,21 @@ within the same config.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		kopy.Kopy(kopyOptions)
+		if options, err := readKoptions(); err == nil {
+			k.Kopy(options)
+		} else {
+			log.Errorln(err)
+			return
+		}
 	},
+}
+
+func readKoptions() (*options.KopyOptions, error) {
+	options, err := options.GetKopyOptions(context)
+	if err != nil {
+		return nil, err
+	}
+	return options, nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

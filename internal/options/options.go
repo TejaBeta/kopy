@@ -26,17 +26,17 @@ type KopyOptions struct {
 	DContext  *rest.Config
 }
 
-func GetKopyOptions(c string) *KopyOptions {
+func GetKopyOptions(c string) (*KopyOptions, error) {
 	cContext, err := context.GetContext()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	dContext, err := context.SwitchContext(c)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &KopyOptions{
 		CContext: cContext,
 		DContext: dContext,
-	}
+	}, err
 }
