@@ -35,7 +35,8 @@ func GetResources(context *rest.Config, ns string) {
 	if validateNS(clientset, ns) {
 		deployments, err := getDeployments(clientset, ns)
 		if err != nil {
-			panic(err)
+			log.Errorln(err, ns)
+			return
 		}
 		fmt.Println(deployments)
 	}
@@ -44,7 +45,7 @@ func GetResources(context *rest.Config, ns string) {
 func validateNS(clientset *kubernetes.Clientset, name string) bool {
 	_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		log.Fatalln("Error while retrieving namespace: " + name)
+		log.Errorln("Error while retrieving namespace: " + name)
 		return false
 	}
 	return true
@@ -55,11 +56,11 @@ func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment
 
 	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
-		panic(fmt.Errorf("Failed to get latest version of Deployment: %v", getErr))
+		log.Errorf("Failed to get latest version of Deployment: %v", getErr)
 	}
 
 	if len(deploymentList.Items) == 0 {
-		return nil, errors.New("No deployments exists in the given namespace")
+		return nil, errors.New("No deployments exists in the given namespace: ")
 	}
 
 	return deploymentList.Items, nil
