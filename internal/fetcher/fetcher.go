@@ -15,12 +15,12 @@ package fetcher
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
 
-	v1 "k8s.io/api/apps/v1"
+	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -35,10 +35,17 @@ func GetResources(context *rest.Config, ns string) {
 	if isValidateNS(clientset, ns) {
 		deployments, err := getDeployments(clientset, ns)
 		if err != nil {
-			log.Errorln(err, ns)
+			log.Errorln(err)
 			return
 		}
-		fmt.Println(deployments)
+
+		configmaps, err := getConfigMaps(clientset, ns)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		fmt.Printf("%v, %v", deployments, configmaps)
 	}
 }
 
@@ -51,7 +58,7 @@ func isValidateNS(clientset *kubernetes.Clientset, name string) bool {
 	return true
 }
 
-func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment, error) {
+func getDeployments(clientset *kubernetes.Clientset, ns string) ([]appv1.Deployment, error) {
 	deploymentsClient := clientset.AppsV1().Deployments(ns)
 
 	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
@@ -59,9 +66,14 @@ func getDeployments(clientset *kubernetes.Clientset, ns string) ([]v1.Deployment
 		return nil, getErr
 	}
 
-	if len(deploymentList.Items) == 0 {
-		return nil, errors.New("No deployments exists in the given namespace: ")
+	return deploymentList.Items, nil
+}
+
+func getConfigMaps(clientset *kubernetes.Clientset, ns string) ([]corev1.ConfigMap, error) {
+	configmapsList, getErr := clientset.CoreV1().ConfigMaps(ns).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
 	}
 
-	return deploymentList.Items, nil
+	return configmapsList.Items, nil
 }
