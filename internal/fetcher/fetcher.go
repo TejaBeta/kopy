@@ -26,20 +26,27 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+type fetchOpts struct {
+	clientset *kubernetes.Clientset
+	namespace string
+}
+
 func GetResources(context *rest.Config, ns string) {
 	clientset, err := kubernetes.NewForConfig(context)
 	if err != nil {
 		panic(err)
 	}
 
-	if isValidateNS(clientset, ns) {
-		deployments, err := getDeployments(clientset, ns)
+	fOpts := fetchOpts{clientset: clientset, namespace: ns}
+
+	if fOpts.isValidateNS() {
+		deployments, err := fOpts.getDeployments()
 		if err != nil {
 			log.Errorln(err)
 			return
 		}
 
-		configmaps, err := getConfigMaps(clientset, ns)
+		configmaps, err := fOpts.getConfigMaps()
 		if err != nil {
 			log.Errorln(err)
 			return
@@ -49,8 +56,8 @@ func GetResources(context *rest.Config, ns string) {
 	}
 }
 
-func isValidateNS(clientset *kubernetes.Clientset, name string) bool {
-	_, err := clientset.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
+func (fOpts *fetchOpts) isValidateNS() bool {
+	_, err := fOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), fOpts.namespace, metav1.GetOptions{})
 	if err != nil {
 		log.Errorln(err)
 		return false
@@ -58,8 +65,8 @@ func isValidateNS(clientset *kubernetes.Clientset, name string) bool {
 	return true
 }
 
-func getDeployments(clientset *kubernetes.Clientset, ns string) ([]appv1.Deployment, error) {
-	deploymentsClient := clientset.AppsV1().Deployments(ns)
+func (fOpts *fetchOpts) getDeployments() ([]appv1.Deployment, error) {
+	deploymentsClient := fOpts.clientset.AppsV1().Deployments(fOpts.namespace)
 
 	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
@@ -69,8 +76,8 @@ func getDeployments(clientset *kubernetes.Clientset, ns string) ([]appv1.Deploym
 	return deploymentList.Items, nil
 }
 
-func getConfigMaps(clientset *kubernetes.Clientset, ns string) ([]corev1.ConfigMap, error) {
-	configmapsList, getErr := clientset.CoreV1().ConfigMaps(ns).List(context.TODO(), metav1.ListOptions{})
+func (fOpts *fetchOpts) getConfigMaps() ([]corev1.ConfigMap, error) {
+	configmapsList, getErr := fOpts.clientset.CoreV1().ConfigMaps(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
