@@ -20,6 +20,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -40,31 +41,7 @@ func GetResources(context *rest.Config, ns string) {
 	fOpts := fetchOpts{clientset: clientset, namespace: ns}
 
 	if fOpts.isValidateNS() {
-		deployments, err := fOpts.getDeployments()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		configmaps, err := fOpts.getConfigMaps()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		clusterRoles, err := fOpts.getClusterRoles()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		roles, err := fOpts.getRoles()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		fmt.Printf("%v, %v, %v, %v", deployments, configmaps, clusterRoles, roles)
+		fmt.Println("Inside namespace")
 	}
 }
 
@@ -125,4 +102,28 @@ func (fOpts *fetchOpts) getRoleBindings() ([]rbacv1.RoleBinding, error) {
 		return nil, getErr
 	}
 	return roleBindings.Items, nil
+}
+
+func (fOpts *fetchOpts) getSecrets() ([]corev1.Secret, error) {
+	secrets, getErr := fOpts.clientset.CoreV1().Secrets(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return secrets.Items, nil
+}
+
+func (fOpts *fetchOpts) getSVC() ([]corev1.Service, error) {
+	services, getErr := fOpts.clientset.CoreV1().Services(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return services.Items, nil
+}
+
+func (fOpts *fetchOpts) getIngress() ([]v1beta1.Ingress, error) {
+	ingresses, getErr := fOpts.clientset.ExtensionsV1beta1().Ingresses(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return ingresses.Items, nil
 }
