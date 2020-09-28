@@ -20,6 +20,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -117,4 +118,12 @@ func (fOpts *fetchOpts) getSVC() ([]corev1.Service, error) {
 		return nil, getErr
 	}
 	return services.Items, nil
+}
+
+func (fOpts *fetchOpts) getIngress() ([]v1beta1.Ingress, error) {
+	ingresses, getErr := fOpts.clientset.ExtensionsV1beta1().Ingresses(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return ingresses.Items, nil
 }
