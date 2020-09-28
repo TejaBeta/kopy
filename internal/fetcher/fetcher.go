@@ -126,3 +126,11 @@ func (fOpts *fetchOpts) getRoleBindings() ([]rbacv1.RoleBinding, error) {
 	}
 	return roleBindings.Items, nil
 }
+
+func (fOpts *fetchOpts) getSecrets() ([]corev1.Secret, error) {
+	secrets, getErr := fOpts.clientset.CoreV1().Secrets(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return secrets.Items, nil
+}
