@@ -40,31 +40,7 @@ func GetResources(context *rest.Config, ns string) {
 	fOpts := fetchOpts{clientset: clientset, namespace: ns}
 
 	if fOpts.isValidateNS() {
-		deployments, err := fOpts.getDeployments()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		configmaps, err := fOpts.getConfigMaps()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		clusterRoles, err := fOpts.getClusterRoles()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		roles, err := fOpts.getRoles()
-		if err != nil {
-			log.Errorln(err)
-			return
-		}
-
-		fmt.Printf("%v, %v, %v, %v", deployments, configmaps, clusterRoles, roles)
+		fmt.Println("Inside namespace")
 	}
 }
 
@@ -133,4 +109,12 @@ func (fOpts *fetchOpts) getSecrets() ([]corev1.Secret, error) {
 		return nil, getErr
 	}
 	return secrets.Items, nil
+}
+
+func (fOpts *fetchOpts) getSVC() ([]corev1.Service, error) {
+	services, getErr := fOpts.clientset.CoreV1().Services(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return services.Items, nil
 }
