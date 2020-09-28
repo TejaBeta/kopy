@@ -84,7 +84,6 @@ func (fOpts *fetchOpts) getDeployments() ([]appv1.Deployment, error) {
 	if getErr != nil {
 		return nil, getErr
 	}
-
 	return deploymentList.Items, nil
 }
 
@@ -93,7 +92,6 @@ func (fOpts *fetchOpts) getConfigMaps() ([]corev1.ConfigMap, error) {
 	if getErr != nil {
 		return nil, getErr
 	}
-
 	return configmapsList.Items, nil
 }
 
@@ -111,4 +109,12 @@ func (fOpts *fetchOpts) getRoles() ([]rbacv1.Role, error) {
 		return nil, getErr
 	}
 	return roles.Items, nil
+}
+
+func (fOpts *fetchOpts) getClusterRoleBindings() ([]rbacv1.ClusterRoleBinding, error) {
+	clusterRoleBindings, getErr := fOpts.clientset.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return clusterRoleBindings.Items, nil
 }
