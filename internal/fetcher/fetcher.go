@@ -58,7 +58,13 @@ func GetResources(context *rest.Config, ns string) {
 			return
 		}
 
-		fmt.Printf("%v, %v, %v", deployments, configmaps, clusterRoles)
+		roles, err := fOpts.getRoles()
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		fmt.Printf("%v, %v, %v, %v", deployments, configmaps, clusterRoles, roles)
 	}
 }
 
@@ -97,4 +103,12 @@ func (fOpts *fetchOpts) getClusterRoles() ([]rbacv1.ClusterRole, error) {
 		return nil, getErr
 	}
 	return clusterRoles.Items, nil
+}
+
+func (fOpts *fetchOpts) getRoles() ([]rbacv1.Role, error) {
+	roles, getErr := fOpts.clientset.RbacV1().Roles(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return roles.Items, nil
 }
