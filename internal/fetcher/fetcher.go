@@ -118,3 +118,11 @@ func (fOpts *fetchOpts) getClusterRoleBindings() ([]rbacv1.ClusterRoleBinding, e
 	}
 	return clusterRoleBindings.Items, nil
 }
+
+func (fOpts *fetchOpts) getRoleBindings() ([]rbacv1.RoleBinding, error) {
+	roleBindings, getErr := fOpts.clientset.RbacV1().RoleBindings(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return roleBindings.Items, nil
+}
