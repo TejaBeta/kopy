@@ -18,9 +18,9 @@ import (
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
-
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -52,7 +52,13 @@ func GetResources(context *rest.Config, ns string) {
 			return
 		}
 
-		fmt.Printf("%v, %v", deployments, configmaps)
+		clusterRoles, err := fOpts.getClusterRoles()
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+
+		fmt.Printf("%v, %v, %v", deployments, configmaps, clusterRoles)
 	}
 }
 
@@ -83,4 +89,12 @@ func (fOpts *fetchOpts) getConfigMaps() ([]corev1.ConfigMap, error) {
 	}
 
 	return configmapsList.Items, nil
+}
+
+func (fOpts *fetchOpts) getClusterRoles() ([]rbacv1.ClusterRole, error) {
+	clusterRoles, getErr := fOpts.clientset.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return clusterRoles.Items, nil
 }
