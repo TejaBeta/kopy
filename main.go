@@ -23,6 +23,5 @@ func main() {
 		DisableColors: false,
 		FullTimestamp: true,
 	})
-	log.SetReportCaller(true)
 	cmd.Execute()
 }
