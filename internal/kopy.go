@@ -14,10 +14,19 @@ limitations under the License.
 package internal
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/tejabeta/kopy/internal/fetcher"
 	"github.com/tejabeta/kopy/internal/options"
 )
 
+// Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	fetcher.GetResources(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	fetcherOpts, err := fetcher.GetFetchOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	if fetcherOpts.IsValidNS() {
+		log.Println("Do something please!")
+	}
 }
