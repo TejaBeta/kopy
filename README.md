@@ -2,9 +2,31 @@
 
 **`Still work in progress`**
 
-A kubectl plugin to copy resources from a particular namespace from one context to another context. 
+A `kubectl` plugin to copy resources from a particular namespace from one context to another context. 
 
-Context switching is currently opinionated as `kopy` supports switching contexts within a single config that has multiple contexts that are part of `.kube/config`.
+## Help Menus
+
+```
+
+$kopy --help
+kopy is a kubectl plugin to copy resources from one context to another context
+
+kopy is a kubectl plugin or a cli to copy K8s resources
+from a particular namespace from the current context to
+another context. However, the context switching is kind
+of opinionated, as the tool requires all the contexts 
+within the same config.
+
+Usage:
+  kopy [flags]
+
+Flags:
+      --a                            All the resources within the namespace
+  -d, --destination-context string   Destination Context name to copy resources into(required)
+  -h, --help                         help for kopy
+  -n, --ns string                    Namespace within the current context
+
+```
 
 **`Ideas are welcome, please drop me a message`**
 
