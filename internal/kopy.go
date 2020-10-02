@@ -38,18 +38,19 @@ type kopyResources struct {
 
 // Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	fetcherOpts, err := fetcher.GetFetchOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	sourceFOpts, err := fetcher.GetFetchOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Fatalln(err)
 		return
 	}
-	if fetcherOpts.IsValidNS() {
-		kResources, err := getKopyResources(fetcherOpts)
+	if sourceFOpts.IsValidNS() {
+		sourceResources, err := getKopyResources(sourceFOpts)
 		if err != nil {
 			log.Fatalln(err)
 			return
 		}
-		log.Println(kResources)
+
+		log.Println(sourceResources)
 	}
 }
 

@@ -20,8 +20,9 @@ import (
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{
-		DisableColors: false,
-		FullTimestamp: true,
+		DisableColors:    true,
+		FullTimestamp:    true,
+		DisableTimestamp: true,
 	})
 	cmd.Execute()
 }

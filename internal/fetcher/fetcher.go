@@ -50,7 +50,7 @@ func GetFetchOpts(context *rest.Config, ns string) (*FetchOpts, error) {
 func (fOpts *FetchOpts) IsValidNS() bool {
 	_, err := fOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), fOpts.namespace, metav1.GetOptions{})
 	if err != nil {
-		log.Errorln(err)
+		log.Info(err)
 		return false
 	}
 	return true
