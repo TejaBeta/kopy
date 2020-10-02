@@ -18,7 +18,6 @@ import (
 
 	"k8s.io/client-go/rest"
 
-	log "github.com/sirupsen/logrus"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -50,7 +49,6 @@ func GetFetchOpts(context *rest.Config, ns string) (*FetchOpts, error) {
 func (fOpts *FetchOpts) IsValidNS() bool {
 	_, err := fOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), fOpts.namespace, metav1.GetOptions{})
 	if err != nil {
-		log.Errorln(err)
 		return false
 	}
 	return true
