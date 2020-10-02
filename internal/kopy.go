@@ -57,6 +57,15 @@ func Kopy(kopyOptions *options.KopyOptions) {
 		}
 
 		log.Println(sourceResources, destFOpts)
+
+		if destFOpts.IsValidNS() {
+			log.Info("Namespace exists at destinationresource will be overwritten.")
+		} else {
+			log.Info("No namespace ", kopyOptions.Namespace, " found in destination context.")
+			log.Info("Namespace and resources will be created in the destination context.")
+		}
+	} else {
+		log.Info("No namespace ", kopyOptions.Namespace, " found in source context.")
 	}
 }
 
