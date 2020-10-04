@@ -36,27 +36,27 @@ type kopyResources struct {
 
 // Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	sourceFOpts, err := koperator.GetOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	sourceKOpts, err := koperator.GetOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
 
-	destFOpts, err := koperator.GetOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
+	destKOpts, err := koperator.GetOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 	}
 
-	if sourceFOpts.IsValidNS() {
-		sourceResources, err := getKopyResources(sourceFOpts)
+	if isValidNS(destKOpts) {
+		sResources, err := getResources(sourceKOpts)
 		if err != nil {
 			log.Fatalln(err)
 			return
 		}
 
-		log.Println(sourceResources, destFOpts)
+		log.Println(sResources, destKOpts)
 
-		if destFOpts.IsValidNS() {
+		if isValidNS(destKOpts) {
 			log.Info("Namespace ", kopyOptions.Namespace, " exists at destination all resource will be overwritten.")
 		} else {
 			log.Info("No namespace ", kopyOptions.Namespace, " found in destination context.")
@@ -67,7 +67,7 @@ func Kopy(kopyOptions *options.KopyOptions) {
 	}
 }
 
-func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
+func getResources(kOpts *koperator.Options) (*kopyResources, error) {
 	deployments, err := kOpts.GetDeployments()
 	if err != nil {
 		return nil, err
@@ -114,4 +114,16 @@ func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
 	}
 
 	return &kopyResources, nil
+}
+
+func createResources(kOpts *koperator.Options, kResource *kopyResources) (*kopyResources, error) {
+	return nil, nil
+}
+
+func isValidNS(kOpts *koperator.Options) bool {
+	_, err := kOpts.GetNS()
+	if err != nil {
+		return false
+	}
+	return true
 }
