@@ -29,3 +29,21 @@ func (kOpts *Options) GetSVC() (result *corev1.ServiceList, err error) {
 		List(context.TODO(), metav1.ListOptions{})
 	return
 }
+
+// DeleteSVC method to delete a svc with the name
+func (kOpts *Options) DeleteSVC(name string) (err error) {
+	err = kOpts.clientset.
+		CoreV1().
+		Services(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateSVC method to create a svc
+func (kOpts *Options) CreateSVC(service *corev1.Service) (result *corev1.Service, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		Services(kOpts.namespace).
+		Create(context.TODO(), service, metav1.CreateOptions{})
+	return
+}
