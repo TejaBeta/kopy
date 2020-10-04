@@ -22,10 +22,28 @@ import (
 )
 
 // GetIngress returns all the Ingresses in the given namespace and clientset
-func (kOpts *Options) GetIngress() ([]v1beta1.Ingress, error) {
-	ingresses, getErr := kOpts.clientset.ExtensionsV1beta1().Ingresses(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
-	if getErr != nil {
-		return nil, getErr
-	}
-	return ingresses.Items, nil
+func (kOpts *Options) GetIngress() (result *v1beta1.IngressList, err error) {
+	result, err = kOpts.clientset.
+		ExtensionsV1beta1().
+		Ingresses(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
+}
+
+// DeleteIngress method deletes an ingress with the given name
+func (kOpts *Options) DeleteIngress(name string) (err error) {
+	err = kOpts.clientset.
+		ExtensionsV1beta1().
+		Ingresses(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateIngress method to create an ingress
+func (kOpts *Options) CreateIngress(ingress *v1beta1.Ingress) (result *v1beta1.Ingress, err error) {
+	result, err = kOpts.clientset.
+		ExtensionsV1beta1().
+		Ingresses(kOpts.namespace).
+		Create(context.TODO(), ingress, metav1.CreateOptions{})
+	return
 }
