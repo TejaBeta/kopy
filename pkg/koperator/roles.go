@@ -28,3 +28,21 @@ func (kOpts *Options) GetRoles() ([]rbacv1.Role, error) {
 	}
 	return roles.Items, nil
 }
+
+// DeleteRole method deletes a role based on the name provided
+func (kOpts *Options) DeleteRole(name string) error {
+	err := kOpts.clientset.RbacV1().Roles(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateRole method creates a role
+func (kOpts *Options) CreateRole(role *rbacv1.Role) (*rbacv1.Role, error) {
+	deleteRole, err := kOpts.clientset.RbacV1().Roles(kOpts.namespace).Create(context.TODO(), role, metav1.CreateOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deleteRole, nil
+}
