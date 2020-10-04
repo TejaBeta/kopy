@@ -25,15 +25,13 @@ import (
 
 // KopyResources as name suggests a struct type to hold all the resources
 type kopyResources struct {
-	Deployments         []appv1.Deployment
-	ConfigMaps          []corev1.ConfigMap
-	ClusterRoles        []rbacv1.ClusterRole
-	Roles               []rbacv1.Role
-	ClusterRoleBindings []rbacv1.ClusterRoleBinding
-	RoleBindings        []rbacv1.RoleBinding
-	Secrets             []corev1.Secret
-	Services            []corev1.Service
-	Ingresses           []v1beta1.Ingress
+	Deployments  []appv1.Deployment
+	ConfigMaps   []corev1.ConfigMap
+	Roles        []rbacv1.Role
+	RoleBindings []rbacv1.RoleBinding
+	Secrets      []corev1.Secret
+	Services     []corev1.Service
+	Ingresses    []v1beta1.Ingress
 }
 
 // Kopy functionality goes here
@@ -80,16 +78,6 @@ func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
 		return nil, err
 	}
 
-	clusterRoles, err := kOpts.GetClusterRoles()
-	if err != nil {
-		return nil, err
-	}
-
-	clusterRoleBindings, err := kOpts.GetClusterRoleBindings()
-	if err != nil {
-		return nil, err
-	}
-
 	roles, err := kOpts.GetRoles()
 	if err != nil {
 		return nil, err
@@ -116,15 +104,13 @@ func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
 	}
 
 	kopyResources := kopyResources{
-		Deployments:         deployments,
-		ConfigMaps:          configMaps,
-		ClusterRoles:        clusterRoles,
-		ClusterRoleBindings: clusterRoleBindings,
-		Roles:               roles,
-		RoleBindings:        roleBindings,
-		Secrets:             secrets,
-		Services:            services,
-		Ingresses:           ingresses,
+		Deployments:  deployments.Items,
+		ConfigMaps:   configMaps.Items,
+		Roles:        roles.Items,
+		RoleBindings: roleBindings.Items,
+		Secrets:      secrets.Items,
+		Services:     services.Items,
+		Ingresses:    ingresses.Items,
 	}
 
 	return &kopyResources, nil
