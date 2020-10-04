@@ -37,3 +37,12 @@ func (kOpts *Options) DeleteConfigMap(name string) error {
 	}
 	return nil
 }
+
+// CreateConfigMap is a method to create a configmap
+func (kOpts *Options) CreateConfigMap(configmap *corev1.ConfigMap) (*corev1.ConfigMap, error) {
+	configmap, err := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).Create(context.TODO(), configmap, metav1.CreateOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return configmap, nil
+}
