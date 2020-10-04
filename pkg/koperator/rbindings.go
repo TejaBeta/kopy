@@ -29,3 +29,21 @@ func (kOpts *Options) GetRoleBindings() ([]rbacv1.RoleBinding, error) {
 	}
 	return roleBindings.Items, nil
 }
+
+// DeleteRBinding method deletes a rolebindings with the given name
+func (kOpts *Options) DeleteRBinding(name string) error {
+	err := kOpts.clientset.RbacV1().RoleBindings(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateRBinding method creates a rolebinding
+func (kOpts *Options) CreateRBinding(rBinding *rbacv1.RoleBinding) (*rbacv1.RoleBinding, error) {
+	roleBinding, getErr := kOpts.clientset.RbacV1().RoleBindings(kOpts.namespace).Create(context.TODO(), rBinding, metav1.CreateOptions{})
+	if getErr != nil {
+		return nil, getErr
+	}
+	return roleBinding, nil
+}
