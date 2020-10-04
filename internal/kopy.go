@@ -15,8 +15,8 @@ package internal
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tejabeta/kopy/internal/fetcher"
 	"github.com/tejabeta/kopy/internal/options"
+	"github.com/tejabeta/kopy/pkg/koperator"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -25,26 +25,24 @@ import (
 
 // KopyResources as name suggests a struct type to hold all the resources
 type kopyResources struct {
-	Deployments         []appv1.Deployment
-	ConfigMaps          []corev1.ConfigMap
-	ClusterRoles        []rbacv1.ClusterRole
-	Roles               []rbacv1.Role
-	ClusterRoleBindings []rbacv1.ClusterRoleBinding
-	RoleBindings        []rbacv1.RoleBinding
-	Secrets             []corev1.Secret
-	Services            []corev1.Service
-	Ingresses           []v1beta1.Ingress
+	Deployments  []appv1.Deployment
+	ConfigMaps   []corev1.ConfigMap
+	Roles        []rbacv1.Role
+	RoleBindings []rbacv1.RoleBinding
+	Secrets      []corev1.Secret
+	Services     []corev1.Service
+	Ingresses    []v1beta1.Ingress
 }
 
 // Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	sourceFOpts, err := fetcher.GetFetchOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	sourceFOpts, err := koperator.GetOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
 
-	destFOpts, err := fetcher.GetFetchOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
+	destFOpts, err := koperator.GetOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 	}
@@ -69,62 +67,50 @@ func Kopy(kopyOptions *options.KopyOptions) {
 	}
 }
 
-func getKopyResources(fetcherOpts *fetcher.FetchOpts) (*kopyResources, error) {
-	deployments, err := fetcherOpts.GetDeployments()
+func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
+	deployments, err := kOpts.GetDeployments()
 	if err != nil {
 		return nil, err
 	}
 
-	configMaps, err := fetcherOpts.GetConfigMaps()
+	configMaps, err := kOpts.GetConfigMaps()
 	if err != nil {
 		return nil, err
 	}
 
-	clusterRoles, err := fetcherOpts.GetClusterRoles()
+	roles, err := kOpts.GetRoles()
 	if err != nil {
 		return nil, err
 	}
 
-	clusterRoleBindings, err := fetcherOpts.GetClusterRoleBindings()
+	roleBindings, err := kOpts.GetRoleBindings()
 	if err != nil {
 		return nil, err
 	}
 
-	roles, err := fetcherOpts.GetRoles()
+	secrets, err := kOpts.GetSecrets()
 	if err != nil {
 		return nil, err
 	}
 
-	roleBindings, err := fetcherOpts.GetRoleBindings()
+	services, err := kOpts.GetSVC()
 	if err != nil {
 		return nil, err
 	}
 
-	secrets, err := fetcherOpts.GetSecrets()
-	if err != nil {
-		return nil, err
-	}
-
-	services, err := fetcherOpts.GetSVC()
-	if err != nil {
-		return nil, err
-	}
-
-	ingresses, err := fetcherOpts.GetIngress()
+	ingresses, err := kOpts.GetIngress()
 	if err != nil {
 		return nil, err
 	}
 
 	kopyResources := kopyResources{
-		Deployments:         deployments,
-		ConfigMaps:          configMaps,
-		ClusterRoles:        clusterRoles,
-		ClusterRoleBindings: clusterRoleBindings,
-		Roles:               roles,
-		RoleBindings:        roleBindings,
-		Secrets:             secrets,
-		Services:            services,
-		Ingresses:           ingresses,
+		Deployments:  deployments.Items,
+		ConfigMaps:   configMaps.Items,
+		Roles:        roles.Items,
+		RoleBindings: roleBindings.Items,
+		Secrets:      secrets.Items,
+		Services:     services.Items,
+		Ingresses:    ingresses.Items,
 	}
 
 	return &kopyResources, nil
