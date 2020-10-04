@@ -23,9 +23,21 @@ import (
 
 // GetSecrets returns all the Secrets in the given namespace and clientset
 func (kOpts *Options) GetSecrets() ([]corev1.Secret, error) {
-	secrets, getErr := kOpts.clientset.CoreV1().Secrets(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
-	if getErr != nil {
-		return nil, getErr
+	result, err := kOpts.clientset.CoreV1().Secrets(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return nil, err
 	}
-	return secrets.Items, nil
+	return result.Items, nil
+}
+
+// DeleteSecret method deletes a secret with the name
+func (kOpts *Options) DeleteSecret(name string) (err error) {
+	err = kOpts.clientset.CoreV1().Secrets(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateSecret method creates a secret
+func (kOpts *Options) CreateSecret(secret *corev1.Secret) (result *corev1.Secret, err error) {
+	result, err = kOpts.clientset.CoreV1().Secrets(kOpts.namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
+	return
 }
