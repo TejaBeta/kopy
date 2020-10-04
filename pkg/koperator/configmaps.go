@@ -28,3 +28,12 @@ func (kOpts *Options) GetConfigMaps() ([]corev1.ConfigMap, error) {
 	}
 	return configmapsList.Items, nil
 }
+
+// DeleteConfigMap is a method to delete a provided configmap name
+func (kOpts *Options) DeleteConfigMap(name string) error {
+	err := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
