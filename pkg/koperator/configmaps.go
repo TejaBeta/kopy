@@ -21,28 +21,28 @@ import (
 )
 
 // GetConfigMaps returns all the Configmaps in the given namespace and clientset
-func (kOpts *Options) GetConfigMaps() ([]corev1.ConfigMap, error) {
-	configmapsList, getErr := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
-	if getErr != nil {
-		return nil, getErr
-	}
-	return configmapsList.Items, nil
+func (kOpts *Options) GetConfigMaps() (result *corev1.ConfigMapList, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		ConfigMaps(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
 }
 
 // DeleteConfigMap is a method to delete a provided configmap name
-func (kOpts *Options) DeleteConfigMap(name string) error {
-	err := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
+func (kOpts *Options) DeleteConfigMap(name string) (err error) {
+	err = kOpts.clientset.
+		CoreV1().
+		ConfigMaps(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
 }
 
 // CreateConfigMap is a method to create a configmap
-func (kOpts *Options) CreateConfigMap(configmap *corev1.ConfigMap) (*corev1.ConfigMap, error) {
-	configmap, err := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).Create(context.TODO(), configmap, metav1.CreateOptions{})
-	if err != nil {
-		return nil, err
-	}
-	return configmap, nil
+func (kOpts *Options) CreateConfigMap(configmap *corev1.ConfigMap) (result *corev1.ConfigMap, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		ConfigMaps(kOpts.namespace).
+		Create(context.TODO(), configmap, metav1.CreateOptions{})
+	return
 }

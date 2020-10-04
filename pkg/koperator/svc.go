@@ -22,10 +22,10 @@ import (
 )
 
 // GetSVC returns all the Services in the given namespace and clientset
-func (kOpts *Options) GetSVC() ([]corev1.Service, error) {
-	services, getErr := kOpts.clientset.CoreV1().Services(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
-	if getErr != nil {
-		return nil, getErr
-	}
-	return services.Items, nil
+func (kOpts *Options) GetSVC() (result *corev1.ServiceList, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		Services(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
 }

@@ -21,28 +21,28 @@ import (
 )
 
 // GetRoles returns all the Roles in the given namespace and clientset
-func (kOpts *Options) GetRoles() ([]rbacv1.Role, error) {
-	roles, getErr := kOpts.clientset.RbacV1().Roles(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
-	if getErr != nil {
-		return nil, getErr
-	}
-	return roles.Items, nil
+func (kOpts *Options) GetRoles() (result *rbacv1.RoleList, err error) {
+	result, err = kOpts.clientset.
+		RbacV1().
+		Roles(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
 }
 
 // DeleteRole method deletes a role based on the name provided
-func (kOpts *Options) DeleteRole(name string) error {
-	err := kOpts.clientset.RbacV1().Roles(kOpts.namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
-	if err != nil {
-		return err
-	}
-	return nil
+func (kOpts *Options) DeleteRole(name string) (err error) {
+	err = kOpts.clientset.
+		RbacV1().
+		Roles(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
 }
 
 // CreateRole method creates a role
-func (kOpts *Options) CreateRole(role *rbacv1.Role) (*rbacv1.Role, error) {
-	deleteRole, err := kOpts.clientset.RbacV1().Roles(kOpts.namespace).Create(context.TODO(), role, metav1.CreateOptions{})
-	if err != nil {
-		return nil, err
-	}
-	return deleteRole, nil
+func (kOpts *Options) CreateRole(role *rbacv1.Role) (result *rbacv1.Role, err error) {
+	result, err = kOpts.clientset.
+		RbacV1().
+		Roles(kOpts.namespace).
+		Create(context.TODO(), role, metav1.CreateOptions{})
+	return
 }
