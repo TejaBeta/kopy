@@ -17,14 +17,36 @@ package koperator
 import (
 	"context"
 
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // IsValidNS validates if the namespace exists or not
 func (kOpts *Options) IsValidNS() bool {
-	_, err := kOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), kOpts.namespace, metav1.GetOptions{})
+	_, err := kOpts.clientset.
+		CoreV1().
+		Namespaces().
+		Get(context.TODO(), kOpts.namespace, metav1.GetOptions{})
 	if err != nil {
 		return false
 	}
 	return true
+}
+
+// DeleteNS method to delete a namespace
+func (kOpts *Options) DeleteNS(name string) (err error) {
+	err = kOpts.clientset.
+		CoreV1().
+		Namespaces().
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateNS method to delete a namespace
+func (kOpts *Options) CreateNS(namespace *v1.Namespace) (result *v1.Namespace, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		Namespaces().
+		Create(context.TODO(), namespace, metav1.CreateOptions{})
+	return
 }
