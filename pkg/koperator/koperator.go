@@ -11,7 +11,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package fetcher
+
+package koperator
 
 import (
 	"context"
@@ -26,28 +27,28 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-// FetchOpts to pass to all the methods
-type FetchOpts struct {
+// Options to pass to all the methods
+type Options struct {
 	clientset *kubernetes.Clientset
 	namespace string
 }
 
-// GetFetchOpts generates required options
-func GetFetchOpts(context *rest.Config, ns string) (*FetchOpts, error) {
+// GetOpts generates required options
+func GetOpts(context *rest.Config, ns string) (*Options, error) {
 	cs, err := kubernetes.NewForConfig(context)
 	if err != nil {
 		return nil, err
 	}
 
-	return &FetchOpts{
+	return &Options{
 		clientset: cs,
 		namespace: ns,
 	}, nil
 }
 
 // IsValidNS validates if the namespace exists or not
-func (fOpts *FetchOpts) IsValidNS() bool {
-	_, err := fOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), fOpts.namespace, metav1.GetOptions{})
+func (kOpts *Options) IsValidNS() bool {
+	_, err := kOpts.clientset.CoreV1().Namespaces().Get(context.TODO(), kOpts.namespace, metav1.GetOptions{})
 	if err != nil {
 		return false
 	}
@@ -55,8 +56,8 @@ func (fOpts *FetchOpts) IsValidNS() bool {
 }
 
 // GetDeployments returns all the Deployments in the given namespace and clientset
-func (fOpts *FetchOpts) GetDeployments() ([]appv1.Deployment, error) {
-	deploymentsClient := fOpts.clientset.AppsV1().Deployments(fOpts.namespace)
+func (kOpts *Options) GetDeployments() ([]appv1.Deployment, error) {
+	deploymentsClient := kOpts.clientset.AppsV1().Deployments(kOpts.namespace)
 
 	deploymentList, getErr := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
@@ -66,8 +67,8 @@ func (fOpts *FetchOpts) GetDeployments() ([]appv1.Deployment, error) {
 }
 
 // GetConfigMaps returns all the Configmaps in the given namespace and clientset
-func (fOpts *FetchOpts) GetConfigMaps() ([]corev1.ConfigMap, error) {
-	configmapsList, getErr := fOpts.clientset.CoreV1().ConfigMaps(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetConfigMaps() ([]corev1.ConfigMap, error) {
+	configmapsList, getErr := kOpts.clientset.CoreV1().ConfigMaps(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -75,8 +76,8 @@ func (fOpts *FetchOpts) GetConfigMaps() ([]corev1.ConfigMap, error) {
 }
 
 // GetClusterRoles returns all the ClusterRoles in the given namespace and clientset
-func (fOpts *FetchOpts) GetClusterRoles() ([]rbacv1.ClusterRole, error) {
-	clusterRoles, getErr := fOpts.clientset.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetClusterRoles() ([]rbacv1.ClusterRole, error) {
+	clusterRoles, getErr := kOpts.clientset.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -84,8 +85,8 @@ func (fOpts *FetchOpts) GetClusterRoles() ([]rbacv1.ClusterRole, error) {
 }
 
 // GetRoles returns all the Roles in the given namespace and clientset
-func (fOpts *FetchOpts) GetRoles() ([]rbacv1.Role, error) {
-	roles, getErr := fOpts.clientset.RbacV1().Roles(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetRoles() ([]rbacv1.Role, error) {
+	roles, getErr := kOpts.clientset.RbacV1().Roles(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -93,8 +94,8 @@ func (fOpts *FetchOpts) GetRoles() ([]rbacv1.Role, error) {
 }
 
 // GetClusterRoleBindings returns all the ClusterRoleBindings in the given namespace and clientset
-func (fOpts *FetchOpts) GetClusterRoleBindings() ([]rbacv1.ClusterRoleBinding, error) {
-	clusterRoleBindings, getErr := fOpts.clientset.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetClusterRoleBindings() ([]rbacv1.ClusterRoleBinding, error) {
+	clusterRoleBindings, getErr := kOpts.clientset.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -102,8 +103,8 @@ func (fOpts *FetchOpts) GetClusterRoleBindings() ([]rbacv1.ClusterRoleBinding, e
 }
 
 // GetRoleBindings returns all the RoleBindings in the given namespace and clientset
-func (fOpts *FetchOpts) GetRoleBindings() ([]rbacv1.RoleBinding, error) {
-	roleBindings, getErr := fOpts.clientset.RbacV1().RoleBindings(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetRoleBindings() ([]rbacv1.RoleBinding, error) {
+	roleBindings, getErr := kOpts.clientset.RbacV1().RoleBindings(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -111,8 +112,8 @@ func (fOpts *FetchOpts) GetRoleBindings() ([]rbacv1.RoleBinding, error) {
 }
 
 // GetSecrets returns all the Secrets in the given namespace and clientset
-func (fOpts *FetchOpts) GetSecrets() ([]corev1.Secret, error) {
-	secrets, getErr := fOpts.clientset.CoreV1().Secrets(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetSecrets() ([]corev1.Secret, error) {
+	secrets, getErr := kOpts.clientset.CoreV1().Secrets(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -120,8 +121,8 @@ func (fOpts *FetchOpts) GetSecrets() ([]corev1.Secret, error) {
 }
 
 // GetSVC returns all the Services in the given namespace and clientset
-func (fOpts *FetchOpts) GetSVC() ([]corev1.Service, error) {
-	services, getErr := fOpts.clientset.CoreV1().Services(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetSVC() ([]corev1.Service, error) {
+	services, getErr := kOpts.clientset.CoreV1().Services(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}
@@ -129,8 +130,8 @@ func (fOpts *FetchOpts) GetSVC() ([]corev1.Service, error) {
 }
 
 // GetIngress returns all the Ingresses in the given namespace and clientset
-func (fOpts *FetchOpts) GetIngress() ([]v1beta1.Ingress, error) {
-	ingresses, getErr := fOpts.clientset.ExtensionsV1beta1().Ingresses(fOpts.namespace).List(context.TODO(), metav1.ListOptions{})
+func (kOpts *Options) GetIngress() ([]v1beta1.Ingress, error) {
+	ingresses, getErr := kOpts.clientset.ExtensionsV1beta1().Ingresses(kOpts.namespace).List(context.TODO(), metav1.ListOptions{})
 	if getErr != nil {
 		return nil, getErr
 	}

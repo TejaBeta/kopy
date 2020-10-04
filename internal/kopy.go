@@ -15,8 +15,8 @@ package internal
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/tejabeta/kopy/internal/fetcher"
 	"github.com/tejabeta/kopy/internal/options"
+	"github.com/tejabeta/kopy/pkg/koperator"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -38,13 +38,13 @@ type kopyResources struct {
 
 // Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	sourceFOpts, err := fetcher.GetFetchOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	sourceFOpts, err := koperator.GetOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 		return
 	}
 
-	destFOpts, err := fetcher.GetFetchOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
+	destFOpts, err := koperator.GetOpts(kopyOptions.DestinationContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 	}
@@ -69,48 +69,48 @@ func Kopy(kopyOptions *options.KopyOptions) {
 	}
 }
 
-func getKopyResources(fetcherOpts *fetcher.FetchOpts) (*kopyResources, error) {
-	deployments, err := fetcherOpts.GetDeployments()
+func getKopyResources(kOpts *koperator.Options) (*kopyResources, error) {
+	deployments, err := kOpts.GetDeployments()
 	if err != nil {
 		return nil, err
 	}
 
-	configMaps, err := fetcherOpts.GetConfigMaps()
+	configMaps, err := kOpts.GetConfigMaps()
 	if err != nil {
 		return nil, err
 	}
 
-	clusterRoles, err := fetcherOpts.GetClusterRoles()
+	clusterRoles, err := kOpts.GetClusterRoles()
 	if err != nil {
 		return nil, err
 	}
 
-	clusterRoleBindings, err := fetcherOpts.GetClusterRoleBindings()
+	clusterRoleBindings, err := kOpts.GetClusterRoleBindings()
 	if err != nil {
 		return nil, err
 	}
 
-	roles, err := fetcherOpts.GetRoles()
+	roles, err := kOpts.GetRoles()
 	if err != nil {
 		return nil, err
 	}
 
-	roleBindings, err := fetcherOpts.GetRoleBindings()
+	roleBindings, err := kOpts.GetRoleBindings()
 	if err != nil {
 		return nil, err
 	}
 
-	secrets, err := fetcherOpts.GetSecrets()
+	secrets, err := kOpts.GetSecrets()
 	if err != nil {
 		return nil, err
 	}
 
-	services, err := fetcherOpts.GetSVC()
+	services, err := kOpts.GetSVC()
 	if err != nil {
 		return nil, err
 	}
 
-	ingresses, err := fetcherOpts.GetIngress()
+	ingresses, err := kOpts.GetIngress()
 	if err != nil {
 		return nil, err
 	}
