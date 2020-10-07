@@ -70,6 +70,9 @@ func Kopy(kopyOptions *options.KopyOptions) {
 				log.Fatalln(err)
 				return
 			}
+
+			koperator.ManipulateResource(ns)
+
 			_, err = destKOpts.CreateNS(ns)
 			if err != nil {
 				log.Fatalln(err)
