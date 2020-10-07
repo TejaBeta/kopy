@@ -47,7 +47,7 @@ func Kopy(kopyOptions *options.KopyOptions) {
 		log.Errorln(err)
 	}
 
-	if isValidNS(destKOpts) {
+	if isValidNS(sourceKOpts) {
 		sResources, err := getResources(sourceKOpts)
 		if err != nil {
 			log.Fatalln(err)
@@ -57,21 +57,26 @@ func Kopy(kopyOptions *options.KopyOptions) {
 		log.Println(sResources, destKOpts)
 
 		if isValidNS(destKOpts) {
+
 			log.Info("Namespace ", kopyOptions.Namespace, " exists at destination all resource will be overwritten.")
+
 		} else {
+
 			log.Info("No namespace ", kopyOptions.Namespace, " found in destination context.")
 			log.Info("Namespace and resources will be created in the destination context.")
+
 			ns, err := sourceKOpts.GetNS()
 			if err != nil {
 				log.Fatalln(err)
 				return
 			}
-
 			_, err = destKOpts.CreateNS(ns)
 			if err != nil {
 				log.Fatalln(err)
 				return
 			}
+
+			log.Info("All the resources are created on the destination")
 		}
 	} else {
 		log.Info("No namespace ", kopyOptions.Namespace, " found in source context.")
