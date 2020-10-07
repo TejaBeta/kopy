@@ -61,6 +61,17 @@ func Kopy(kopyOptions *options.KopyOptions) {
 		} else {
 			log.Info("No namespace ", kopyOptions.Namespace, " found in destination context.")
 			log.Info("Namespace and resources will be created in the destination context.")
+			ns, err := sourceKOpts.GetNS()
+			if err != nil {
+				log.Fatalln(err)
+				return
+			}
+
+			_, err = destKOpts.CreateNS(ns)
+			if err != nil {
+				log.Fatalln(err)
+				return
+			}
 		}
 	} else {
 		log.Info("No namespace ", kopyOptions.Namespace, " found in source context.")
