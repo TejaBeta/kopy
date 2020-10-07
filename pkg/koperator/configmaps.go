@@ -43,6 +43,11 @@ func (kOpts *Options) CreateConfigMap(configmap *corev1.ConfigMap) (result *core
 	result, err = kOpts.clientset.
 		CoreV1().
 		ConfigMaps(kOpts.namespace).
-		Create(context.TODO(), configmap, metav1.CreateOptions{})
+		Create(context.TODO(), manConfigMap(configmap), metav1.CreateOptions{})
 	return
+}
+
+func manConfigMap(configmap *corev1.ConfigMap) *corev1.ConfigMap {
+	configmap.ResourceVersion = ""
+	return configmap
 }
