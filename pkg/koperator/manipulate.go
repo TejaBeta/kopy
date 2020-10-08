@@ -47,6 +47,9 @@ func ManipulateResource(x interface{}) {
 	case *corev1.Secret:
 		input := x.(*corev1.Secret)
 		input.ResourceVersion = ""
+	case *corev1.Service:
+		input := x.(*corev1.Service)
+		input.ResourceVersion = ""
 	default:
 		fmt.Println("In default", v)
 	}
