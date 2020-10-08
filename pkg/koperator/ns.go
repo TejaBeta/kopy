@@ -44,11 +44,6 @@ func (kOpts *Options) CreateNS(namespace *v1.Namespace) (result *v1.Namespace, e
 	result, err = kOpts.clientset.
 		CoreV1().
 		Namespaces().
-		Create(context.TODO(), manNS(namespace), metav1.CreateOptions{})
+		Create(context.TODO(), namespace, metav1.CreateOptions{})
 	return
-}
-
-func manNS(ns *v1.Namespace) *v1.Namespace {
-	ns.ResourceVersion = ""
-	return ns
 }

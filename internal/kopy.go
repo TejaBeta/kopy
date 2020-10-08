@@ -25,13 +25,13 @@ import (
 
 // KopyResources as name suggests a struct type to hold all the resources
 type kopyResources struct {
-	Deployments  []appv1.Deployment
-	ConfigMaps   []corev1.ConfigMap
-	Roles        []rbacv1.Role
-	RoleBindings []rbacv1.RoleBinding
-	Secrets      []corev1.Secret
-	Services     []corev1.Service
-	Ingresses    []v1beta1.Ingress
+	Deployments  *[]appv1.Deployment
+	ConfigMaps   *[]corev1.ConfigMap
+	Roles        *[]rbacv1.Role
+	RoleBindings *[]rbacv1.RoleBinding
+	Secrets      *[]corev1.Secret
+	Services     *[]corev1.Service
+	Ingresses    *[]v1beta1.Ingress
 }
 
 // Kopy functionality goes here
@@ -54,7 +54,7 @@ func Kopy(kopyOptions *options.KopyOptions) {
 			return
 		}
 
-		log.Println(sResources, destKOpts)
+		// log.Println(sResources, destKOpts)
 
 		if isValidNS(destKOpts) {
 
@@ -74,6 +74,12 @@ func Kopy(kopyOptions *options.KopyOptions) {
 			koperator.ManipulateResource(ns)
 
 			_, err = destKOpts.CreateNS(ns)
+			if err != nil {
+				log.Fatalln(err)
+				return
+			}
+
+			err = createResources(destKOpts, sResources)
 			if err != nil {
 				log.Fatalln(err)
 				return
@@ -123,13 +129,13 @@ func getResources(kOpts *koperator.Options) (*kopyResources, error) {
 	}
 
 	kopyResources := kopyResources{
-		Deployments:  deployments.Items,
-		ConfigMaps:   configMaps.Items,
-		Roles:        roles.Items,
-		RoleBindings: roleBindings.Items,
-		Secrets:      secrets.Items,
-		Services:     services.Items,
-		Ingresses:    ingresses.Items,
+		Deployments:  &deployments.Items,
+		ConfigMaps:   &configMaps.Items,
+		Roles:        &roles.Items,
+		RoleBindings: &roleBindings.Items,
+		Secrets:      &secrets.Items,
+		Services:     &services.Items,
+		Ingresses:    &ingresses.Items,
 	}
 
 	return &kopyResources, nil
@@ -137,8 +143,9 @@ func getResources(kOpts *koperator.Options) (*kopyResources, error) {
 
 func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 
-	if len(kResource.Deployments) > 0 {
-		for _, v := range kResource.Deployments {
+	if len(*kResource.Deployments) > 0 {
+		for _, v := range *kResource.Deployments {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateDeployment(&v)
 			if err != nil {
 				return err
@@ -146,8 +153,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.ConfigMaps) > 0 {
-		for _, v := range kResource.ConfigMaps {
+	if len(*kResource.ConfigMaps) > 0 {
+		for _, v := range *kResource.ConfigMaps {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateConfigMap(&v)
 			if err != nil {
 				return err
@@ -155,8 +163,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.Roles) > 0 {
-		for _, v := range kResource.Roles {
+	if len(*kResource.Roles) > 0 {
+		for _, v := range *kResource.Roles {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateRole(&v)
 			if err != nil {
 				return err
@@ -164,8 +173,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.RoleBindings) > 0 {
-		for _, v := range kResource.RoleBindings {
+	if len(*kResource.RoleBindings) > 0 {
+		for _, v := range *kResource.RoleBindings {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateRBinding(&v)
 			if err != nil {
 				return err
@@ -173,8 +183,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.Secrets) > 0 {
-		for _, v := range kResource.Secrets {
+	if len(*kResource.Secrets) > 0 {
+		for _, v := range *kResource.Secrets {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateSecret(&v)
 			if err != nil {
 				return err
@@ -182,8 +193,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.Services) > 0 {
-		for _, v := range kResource.Services {
+	if len(*kResource.Services) > 0 {
+		for _, v := range *kResource.Services {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateSVC(&v)
 			if err != nil {
 				return err
@@ -191,17 +203,9 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 		}
 	}
 
-	if len(kResource.Services) > 0 {
-		for _, v := range kResource.Services {
-			_, err := kOpts.CreateSVC(&v)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(kResource.Ingresses) > 0 {
-		for _, v := range kResource.Ingresses {
+	if len(*kResource.Ingresses) > 0 {
+		for _, v := range *kResource.Ingresses {
+			koperator.ManipulateResource(&v)
 			_, err := kOpts.CreateIngress(&v)
 			if err != nil {
 				return err

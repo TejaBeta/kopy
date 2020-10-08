@@ -49,7 +49,7 @@ func ManipulateResource(x interface{}) {
 		input.ResourceVersion = ""
 	case *corev1.Service:
 		input := x.(*corev1.Service)
-		input.ResourceVersion = ""
+		input.ResourceVersion, input.Spec.ClusterIP = "", ""
 	default:
 		fmt.Println("In default", v)
 	}
