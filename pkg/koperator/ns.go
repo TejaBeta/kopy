@@ -21,16 +21,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// IsValidNS validates if the namespace exists or not
-func (kOpts *Options) IsValidNS() bool {
-	_, err := kOpts.clientset.
+// GetNS validates if the namespace exists or not
+func (kOpts *Options) GetNS() (result *v1.Namespace, err error) {
+	result, err = kOpts.clientset.
 		CoreV1().
 		Namespaces().
 		Get(context.TODO(), kOpts.namespace, metav1.GetOptions{})
-	if err != nil {
-		return false
-	}
-	return true
+	return
 }
 
 // DeleteNS method to delete a namespace
