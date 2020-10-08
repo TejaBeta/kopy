@@ -17,6 +17,7 @@ package koperator
 import (
 	"fmt"
 
+	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -28,6 +29,9 @@ func ManipulateResource(x interface{}) {
 		input.ResourceVersion = ""
 	case *corev1.ConfigMap:
 		input := x.(*corev1.ConfigMap)
+		input.ResourceVersion = ""
+	case *appv1.Deployment:
+		input := x.(*appv1.Deployment)
 		input.ResourceVersion = ""
 	default:
 		fmt.Println("In default", v)
