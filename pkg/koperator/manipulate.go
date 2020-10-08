@@ -17,15 +17,18 @@ package koperator
 import (
 	"fmt"
 
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // ManipulateResource helps to manipulate resources
 func ManipulateResource(x interface{}) {
 	switch v := x.(type) {
-	case *v1.Namespace:
-		ns := x.(*v1.Namespace)
-		ns.ResourceVersion = ""
+	case *corev1.Namespace:
+		input := x.(*corev1.Namespace)
+		input.ResourceVersion = ""
+	case *corev1.ConfigMap:
+		input := x.(*corev1.ConfigMap)
+		input.ResourceVersion = ""
 	default:
 		fmt.Println("In default", v)
 	}
