@@ -19,6 +19,7 @@ import (
 
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 )
 
 // ManipulateResource helps to manipulate resources
@@ -32,6 +33,9 @@ func ManipulateResource(x interface{}) {
 		input.ResourceVersion = ""
 	case *appv1.Deployment:
 		input := x.(*appv1.Deployment)
+		input.ResourceVersion = ""
+	case *v1beta1.Ingress:
+		input := x.(*v1beta1.Ingress)
 		input.ResourceVersion = ""
 	default:
 		fmt.Println("In default", v)
