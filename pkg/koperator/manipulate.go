@@ -41,6 +41,9 @@ func ManipulateResource(x interface{}) {
 	case *rbacv1.RoleBinding:
 		input := x.(*rbacv1.RoleBinding)
 		input.ResourceVersion = ""
+	case *rbacv1.Role:
+		input := x.(*rbacv1.Role)
+		input.ResourceVersion = ""
 	default:
 		fmt.Println("In default", v)
 	}
