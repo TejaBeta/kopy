@@ -81,7 +81,6 @@ func init() {
 
 	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace within the current context")
 	rootCmd.Flags().StringVarP(&destContext, "destination-context", "d", "", "Destination Context name to copy resources into(required)")
-	rootCmd.Flags().BoolVar(&allResource, "a", false, "All the resources within the namespace")
 	rootCmd.MarkFlagRequired("ns")
 	rootCmd.MarkFlagRequired("destination-context")
 }
