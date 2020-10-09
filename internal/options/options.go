@@ -22,21 +22,34 @@ import (
 type KopyOptions struct {
 	Namespace          string
 	AllResource        bool
-	CurrentContext     *rest.Config
+	SourceContext      *rest.Config
 	DestinationContext *rest.Config
 }
 
-func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
-	currentContext, err := context.GetContext()
+func GetKopyOptions(sourceCName string, destCName string) (*KopyOptions, error) {
+
+	var sContext, dContext *rest.Config
+	var err error
+
+	if sourceCName == "" {
+		sContext, err = context.GetContext()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		sContext, err = context.SwitchContext(sourceCName)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	dContext, err = context.SwitchContext(destCName)
 	if err != nil {
 		return nil, err
 	}
-	destinationContext, err := context.SwitchContext(DestContextName)
-	if err != nil {
-		return nil, err
-	}
+
 	return &KopyOptions{
-		CurrentContext:     currentContext,
-		DestinationContext: destinationContext,
+		SourceContext:      sContext,
+		DestinationContext: dContext,
 	}, err
 }

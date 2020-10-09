@@ -27,9 +27,10 @@ import (
 )
 
 var (
-	nameSpace   string
-	destContext string
-	allResource bool
+	nameSpace     string
+	sourceContext string
+	destContext   string
+	allResource   bool
 )
 
 var cfgFile string
@@ -41,10 +42,10 @@ var rootCmd = &cobra.Command{
 	Long: `kopy is a kubectl plugin to copy resources from one context to another context
 
 kopy is a kubectl plugin or a cli to copy K8s resources
-from a particular namespace from the current context to
-another context. However, the context switching is kind
-of opinionated, as the tool requires all the contexts 
-within the same config.`,
+from one context to another context. Only requirement
+here is to have both the contexts inside your kubectl 
+config and appropriate accesses to the clusters`,
+
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
@@ -58,7 +59,7 @@ within the same config.`,
 }
 
 func readKoptions() (*options.KopyOptions, error) {
-	options, err := options.GetKopyOptions(destContext)
+	options, err := options.GetKopyOptions(sourceContext, destContext)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +80,9 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace within the current context")
+	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace to copy resources from(required)")
+	rootCmd.Flags().StringVarP(&sourceContext, "source-context", "s", "", "Source Context name to copy resources from. If empty takes current context.")
 	rootCmd.Flags().StringVarP(&destContext, "destination-context", "d", "", "Destination Context name to copy resources into(required)")
-	rootCmd.Flags().BoolVar(&allResource, "a", false, "All the resources within the namespace")
 	rootCmd.MarkFlagRequired("ns")
 	rootCmd.MarkFlagRequired("destination-context")
 }

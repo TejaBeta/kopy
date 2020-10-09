@@ -36,7 +36,7 @@ type kopyResources struct {
 
 // Kopy functionality goes here
 func Kopy(kopyOptions *options.KopyOptions) {
-	sourceKOpts, err := koperator.GetOpts(kopyOptions.CurrentContext, kopyOptions.Namespace)
+	sourceKOpts, err := koperator.GetOpts(kopyOptions.SourceContext, kopyOptions.Namespace)
 	if err != nil {
 		log.Errorln(err)
 		return
@@ -54,16 +54,11 @@ func Kopy(kopyOptions *options.KopyOptions) {
 			return
 		}
 
-		// log.Println(sResources, destKOpts)
-
 		if isValidNS(destKOpts) {
-
-			log.Info("Namespace ", kopyOptions.Namespace, " exists at destination all resource will be overwritten.")
-
+			log.Error("Namespace ", kopyOptions.Namespace, " exists in destination.")
 		} else {
-
-			log.Info("No namespace ", kopyOptions.Namespace, " found in destination context.")
-			log.Info("Namespace and resources will be created in the destination context.")
+			log.Info("No namespace ", kopyOptions.Namespace, " found in destination.")
+			log.Info("Namespace and resources will be created in the destination.")
 
 			ns, err := sourceKOpts.GetNS()
 			if err != nil {
@@ -72,7 +67,6 @@ func Kopy(kopyOptions *options.KopyOptions) {
 			}
 
 			koperator.ManipulateResource(ns)
-
 			_, err = destKOpts.CreateNS(ns)
 			if err != nil {
 				log.Fatalln(err)
@@ -85,11 +79,13 @@ func Kopy(kopyOptions *options.KopyOptions) {
 				return
 			}
 
-			log.Info("All the resources are created on the destination")
+			log.Info("All the resources are created in the destination.")
 		}
 	} else {
-		log.Info("No namespace ", kopyOptions.Namespace, " found in source context.")
+		log.Error("No namespace ", kopyOptions.Namespace, " found in source context.")
 	}
+
+	return
 }
 
 func getResources(kOpts *koperator.Options) (*kopyResources, error) {
