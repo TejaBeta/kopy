@@ -80,7 +80,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace within the current context")
+	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace to copy resources from(required)")
 	rootCmd.Flags().StringVarP(&sourceContext, "source-context", "s", "", "Source Context name to copy resources from. If empty takes current context.")
 	rootCmd.Flags().StringVarP(&destContext, "destination-context", "d", "", "Destination Context name to copy resources into(required)")
 	rootCmd.MarkFlagRequired("ns")
