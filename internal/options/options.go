@@ -22,12 +22,12 @@ import (
 type KopyOptions struct {
 	Namespace          string
 	AllResource        bool
-	CurrentContext     *rest.Config
+	SourceContext      *rest.Config
 	DestinationContext *rest.Config
 }
 
 func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
-	currentContext, err := context.GetContext()
+	sourceContext, err := context.GetContext()
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
 		return nil, err
 	}
 	return &KopyOptions{
-		CurrentContext:     currentContext,
+		SourceContext:      sourceContext,
 		DestinationContext: destinationContext,
 	}, err
 }
