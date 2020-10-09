@@ -26,17 +26,30 @@ type KopyOptions struct {
 	DestinationContext *rest.Config
 }
 
-func GetKopyOptions(DestContextName string) (*KopyOptions, error) {
-	sourceContext, err := context.GetContext()
+func GetKopyOptions(sourceCName string, destCName string) (*KopyOptions, error) {
+
+	var sContext, dContext *rest.Config
+	var err error
+
+	if sourceCName == "" {
+		sContext, err = context.GetContext()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		sContext, err = context.SwitchContext(sourceCName)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	dContext, err = context.SwitchContext(destCName)
 	if err != nil {
 		return nil, err
 	}
-	destinationContext, err := context.SwitchContext(DestContextName)
-	if err != nil {
-		return nil, err
-	}
+
 	return &KopyOptions{
-		SourceContext:      sourceContext,
-		DestinationContext: destinationContext,
+		SourceContext:      sContext,
+		DestinationContext: dContext,
 	}, err
 }

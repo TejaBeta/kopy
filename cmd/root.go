@@ -27,9 +27,10 @@ import (
 )
 
 var (
-	nameSpace   string
-	destContext string
-	allResource bool
+	nameSpace     string
+	sourceContext string
+	destContext   string
+	allResource   bool
 )
 
 var cfgFile string
@@ -58,7 +59,7 @@ within the same config.`,
 }
 
 func readKoptions() (*options.KopyOptions, error) {
-	options, err := options.GetKopyOptions(destContext)
+	options, err := options.GetKopyOptions(sourceContext, destContext)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +81,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.Flags().StringVarP(&nameSpace, "ns", "n", "", "Namespace within the current context")
-	rootCmd.Flags().StringVarP(&destContext, "source-context", "s", "", "Source Context name to copy resources from")
+	rootCmd.Flags().StringVarP(&sourceContext, "source-context", "s", "", "Source Context name to copy resources from")
 	rootCmd.Flags().StringVarP(&destContext, "destination-context", "d", "", "Destination Context name to copy resources into(required)")
 	rootCmd.MarkFlagRequired("ns")
 	rootCmd.MarkFlagRequired("destination-context")
