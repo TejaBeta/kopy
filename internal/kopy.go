@@ -54,11 +54,10 @@ func Kopy(kopyOptions *options.KopyOptions) {
 			return
 		}
 
-		// log.Println(sResources, destKOpts)
-
 		if isValidNS(destKOpts) {
 
-			log.Info("Namespace ", kopyOptions.Namespace, " exists at destination all resource will be overwritten.")
+			log.Error("Namespace ", kopyOptions.Namespace, " exists at destination.")
+			return
 
 		} else {
 
