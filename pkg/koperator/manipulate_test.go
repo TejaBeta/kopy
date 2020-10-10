@@ -26,19 +26,35 @@ import (
 func TestNamespaceManipulation(t *testing.T) {
 
 	clientset := testclient.NewSimpleClientset()
-	ns := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-ns"}}
+	ns := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-ns", ResourceVersion: "12345"}}
 
 	namespace, err := clientset.CoreV1().Namespaces().Create(context.TODO(), ns, metav1.CreateOptions{})
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
-	namespace.ResourceVersion = "12345"
-
 	ManipulateResource(namespace)
 
 	if namespace.ResourceVersion != "" {
 		t.Errorf("Manipulation of Namespace is failing")
+	}
+
+}
+
+func TestConfigMapManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-configmap", ResourceVersion: "12345"}}
+
+	configmap, err := clientset.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(configmap)
+
+	if configmap.ResourceVersion != "" {
+		t.Errorf("Manipulation of Configmap is failing")
 	}
 
 }
