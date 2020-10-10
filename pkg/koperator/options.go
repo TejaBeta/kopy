@@ -20,7 +20,7 @@ import (
 
 // Options to pass to all the methods
 type Options struct {
-	clientset *kubernetes.Clientset
+	clientset kubernetes.Interface
 	namespace string
 }
 
