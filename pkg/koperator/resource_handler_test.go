@@ -453,3 +453,88 @@ func TestCreateRoleBindings(t *testing.T) {
 	}
 
 }
+
+func TestGetRoles(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.Role{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-role", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.RbacV1().Roles(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetRoles()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-role" {
+			t.Errorf("Error while getting role")
+		}
+	}
+
+}
+
+func TestDeleteRole(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.Role{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-role", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.RbacV1().Roles(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteRole("unit-test-role")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteRole("unit-test-role-1")
+	if err == nil {
+		t.Errorf("Error while deleting non-existence role")
+	}
+}
+
+func TestCreateRole(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.Role{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-role", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateRole(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := cs.RbacV1().Roles(options.namespace).Get(context.TODO(), "unit-test-role", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-role" {
+		t.Errorf("Error while retreiving created role")
+	}
+
+	_, err = cs.RbacV1().Roles(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while creating duplicate role")
+	}
+
+}
