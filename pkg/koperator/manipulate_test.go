@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	appv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	testclient "k8s.io/client-go/kubernetes/fake"
@@ -55,6 +56,24 @@ func TestConfigMapManipulation(t *testing.T) {
 
 	if configmap.ResourceVersion != "" {
 		t.Errorf("Manipulation of Configmap is failing")
+	}
+
+}
+
+func TestDeploymentManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &appv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-deployment", ResourceVersion: "12345"}}
+
+	deployment, err := clientset.AppsV1().Deployments("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(deployment)
+
+	if deployment.ResourceVersion != "" {
+		t.Errorf("Manipulation of Deployment is failing")
 	}
 
 }
