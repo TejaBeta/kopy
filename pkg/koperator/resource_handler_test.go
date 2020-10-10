@@ -624,3 +624,89 @@ func TestCreateSecret(t *testing.T) {
 	}
 
 }
+
+func TestGetSVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Service{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-service", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Services(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetSVC()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-service" {
+			t.Errorf("Error while getting service")
+		}
+	}
+
+}
+
+func TestDeleteSVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Service{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-service", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Services(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteSVC("unit-test-service")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteSVC("unit-test-service-1")
+	if err == nil {
+		t.Errorf("Error while deleting non-existence service")
+	}
+
+}
+
+func TestCreateSVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Service{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-service", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateSVC(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := cs.CoreV1().Services(options.namespace).Get(context.TODO(), "unit-test-service", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-service" {
+		t.Errorf("Error while retreiving created service")
+	}
+
+	_, err = cs.CoreV1().Services(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while trying to create a duplicate service")
+	}
+
+}
