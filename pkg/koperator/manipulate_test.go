@@ -151,3 +151,21 @@ func TestSecretManipulation(t *testing.T) {
 	}
 
 }
+
+func TestServiceManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &v1.Service{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-service", ResourceVersion: "12345"}}
+
+	output, err := clientset.CoreV1().Services("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(output)
+
+	if output.ResourceVersion != "" {
+		t.Errorf("Manipulation of services is failing")
+	}
+
+}
