@@ -1,4 +1,4 @@
-# kopy [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/gomods/athens)
+# kopy [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/gomods/athens.svg)](https://github.com/tejabeta/kopy)
 
 A `kubectl` plugin to copy resources from a particular namespace from one context to another context. 
 
