@@ -21,6 +21,7 @@ import (
 	appv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	testclient "k8s.io/client-go/kubernetes/fake"
 )
@@ -93,6 +94,24 @@ func TestIngressManipulation(t *testing.T) {
 
 	if output.ResourceVersion != "" {
 		t.Errorf("Manipulation of Ingress is failing")
+	}
+
+}
+
+func TestRoleBindingManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &rbacv1.RoleBinding{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-rbingings", ResourceVersion: "12345"}}
+
+	output, err := clientset.RbacV1().RoleBindings("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(output)
+
+	if output.ResourceVersion != "" {
+		t.Errorf("Manipulation of RoleBindings is failing")
 	}
 
 }
