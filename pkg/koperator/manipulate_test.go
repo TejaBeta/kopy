@@ -115,3 +115,21 @@ func TestRoleBindingManipulation(t *testing.T) {
 	}
 
 }
+
+func TestRolesManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &rbacv1.Role{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-roles", ResourceVersion: "12345"}}
+
+	output, err := clientset.RbacV1().Roles("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(output)
+
+	if output.ResourceVersion != "" {
+		t.Errorf("Manipulation of Roles is failing")
+	}
+
+}
