@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	appv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	testclient "k8s.io/client-go/kubernetes/fake"
 )
@@ -73,7 +74,7 @@ func TestDeleteDeployment(t *testing.T) {
 
 	err = options.DeleteDeployment("unit-test-deployment-1")
 	if err == nil {
-		t.Errorf("Able to delete unexisting deployment")
+		t.Errorf("Error while deleting unexistence deployment")
 	}
 
 }
@@ -95,7 +96,84 @@ func TestCreateDeployment(t *testing.T) {
 
 	_, err = cs.AppsV1().Deployments("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
+		t.Fatal("Error while creating duplicate deployment")
+	}
+
+}
+
+func TestGetConfigMap(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-configmap", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := cs.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
 		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetConfigMaps()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-configmap" {
+			t.Errorf("Error while getting configmaps")
+		}
+	}
+
+}
+
+func TestDeleteConfigMap(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-configmap", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := cs.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteConfigMap("unit-test-configmap")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteConfigMap("unit-test-configmap-1")
+	if err == nil {
+		t.Fatal("Error while deleting known existence configmap")
+	}
+
+}
+
+func TestCreateConfigMap(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-configmap", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := options.CreateConfigMap(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = cs.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Fatal("Error while creating duplicate configmap")
 	}
 
 }
