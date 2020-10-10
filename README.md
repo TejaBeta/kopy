@@ -1,4 +1,4 @@
-# kopy
+# kopy ![Go](https://github.com/TejaBeta/kopy/workflows/Go/badge.svg)
 
 A `kubectl` plugin to copy resources from a particular namespace from one context to another context. 
 
