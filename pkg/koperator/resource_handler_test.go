@@ -21,6 +21,7 @@ import (
 	appv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	testclient "k8s.io/client-go/kubernetes/fake"
 )
@@ -327,6 +328,83 @@ func TestCreateNS(t *testing.T) {
 	_, err = cs.CoreV1().Namespaces().Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
 		t.Errorf("Error while creating duplicate namespace")
+	}
+
+}
+
+func TestGetRoleBindings(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.RoleBinding{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-rolebinding", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.RbacV1().RoleBindings(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetRoleBindings()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-rolebinding" {
+			t.Errorf("Error while getting rolebindings")
+		}
+	}
+
+}
+
+func TestDeleteRoleBindings(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.RoleBinding{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-rolebinding", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.RbacV1().RoleBindings(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteRBinding("unit-test-rolebinding")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteRBinding("unit-test-rolebinding-1")
+	if err == nil {
+		t.Errorf("Error while deleting a non existence rolebinding")
+	}
+
+}
+
+func TestCreateRoleBindings(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &rbacv1.RoleBinding{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-rolebinding", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateRBinding(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = cs.RbacV1().RoleBindings(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while creating a duplicate rolebinding")
 	}
 
 }
