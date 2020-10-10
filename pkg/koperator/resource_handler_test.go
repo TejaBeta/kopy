@@ -96,6 +96,15 @@ func TestCreateDeployment(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
+	output, err := cs.AppsV1().Deployments(options.namespace).Get(context.TODO(), "unit-test-deployment", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-deployment" {
+		t.Errorf("Error while retrieving created deployment")
+	}
+
 	_, err = cs.AppsV1().Deployments("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
 		t.Fatal("Error while creating duplicate deployment")
@@ -171,6 +180,15 @@ func TestCreateConfigMap(t *testing.T) {
 	_, err := options.CreateConfigMap(input)
 	if err != nil {
 		t.Fatal(err.Error())
+	}
+
+	output, err := cs.CoreV1().ConfigMaps(options.namespace).Get(context.TODO(), "unit-test-configmap", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-configmap" {
+		t.Errorf("Error while retrieving created configmap")
 	}
 
 	_, err = cs.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
@@ -250,6 +268,15 @@ func TestCreateIngress(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
+	output, err := cs.ExtensionsV1beta1().Ingresses("unit-test-ns").Get(context.TODO(), "unit-test-ingress", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-ingress" {
+		t.Errorf("Error while retreiving created ingress")
+	}
+
 	_, err = cs.ExtensionsV1beta1().Ingresses("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
 		t.Errorf("Error while creating duplicate ingress")
@@ -323,6 +350,15 @@ func TestCreateNS(t *testing.T) {
 	_, err := options.CreateNS(input)
 	if err != nil {
 		t.Fatal(err.Error())
+	}
+
+	output, err := cs.CoreV1().Namespaces().Get(context.TODO(), "unit-test-namespace", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-namespace" {
+		t.Errorf("Error while retrieving created namespace")
 	}
 
 	_, err = cs.CoreV1().Namespaces().Create(context.TODO(), input, metav1.CreateOptions{})
@@ -400,6 +436,15 @@ func TestCreateRoleBindings(t *testing.T) {
 	_, err := options.CreateRBinding(input)
 	if err != nil {
 		t.Fatal(err.Error())
+	}
+
+	output, err := cs.RbacV1().RoleBindings(options.namespace).Get(context.TODO(), "unit-test-rolebinding", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-rolebinding" {
+		t.Errorf("Created rolebinding doesn't exist")
 	}
 
 	_, err = cs.RbacV1().RoleBindings(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
