@@ -50,3 +50,52 @@ func TestGetDeployment(t *testing.T) {
 	}
 
 }
+
+func TestDeleteDeployment(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &appv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-deployment", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := cs.AppsV1().Deployments("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteDeployment("unit-test-deployment")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteDeployment("unit-test-deployment-1")
+	if err == nil {
+		t.Errorf("Able to delete unexisting deployment")
+	}
+
+}
+
+func TestCreateDeployment(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &appv1.Deployment{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-deployment", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := options.CreateDeployment(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = cs.AppsV1().Deployments("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Fatal(err.Error())
+	}
+
+}
