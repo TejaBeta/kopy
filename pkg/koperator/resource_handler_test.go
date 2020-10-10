@@ -20,6 +20,7 @@ import (
 
 	appv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	testclient "k8s.io/client-go/kubernetes/fake"
 )
@@ -173,7 +174,84 @@ func TestCreateConfigMap(t *testing.T) {
 
 	_, err = cs.CoreV1().ConfigMaps("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
-		t.Fatal("Error while creating duplicate configmap")
+		t.Errorf("Error while creating duplicate configmap")
+	}
+
+}
+
+func TestGetIngress(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1beta1.Ingress{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-ingress", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := cs.ExtensionsV1beta1().Ingresses("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetIngress()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-ingress" {
+			t.Errorf("Error while getting ingress")
+		}
+	}
+
+}
+
+func TestDeleteIngress(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1beta1.Ingress{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-ingress", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := cs.ExtensionsV1beta1().Ingresses("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteIngress("unit-test-ingress")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteIngress("unit-test-ingress-1")
+	if err == nil {
+		t.Errorf("Error while deleting non existence ingress")
+	}
+
+}
+
+func TestCreateIngress(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1beta1.Ingress{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-ingress", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-ns",
+	}
+
+	_, err := options.CreateIngress(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = cs.ExtensionsV1beta1().Ingresses("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while creating duplicate ingress")
 	}
 
 }
