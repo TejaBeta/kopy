@@ -538,3 +538,89 @@ func TestCreateRole(t *testing.T) {
 	}
 
 }
+
+func TestGetSecret(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Secret{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-secret", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Secrets(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetSecrets()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-secret" {
+			t.Errorf("Error while getting secret")
+		}
+	}
+
+}
+
+func TestDeleteSecret(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Secret{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-secret", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Secrets(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteSecret("unit-test-secret")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteSecret("unit-test-secret-1")
+	if err == nil {
+		t.Errorf("Error while deleting non-existence secret")
+	}
+
+}
+
+func TestCreateSecret(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Secret{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-secret", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateSecret(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := cs.CoreV1().Secrets(options.namespace).Get(context.TODO(), "unit-test-secret", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-secret" {
+		t.Errorf("Error while retreiving already created secret")
+	}
+
+	_, err = cs.CoreV1().Secrets(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while creating duplicate secret")
+	}
+
+}
