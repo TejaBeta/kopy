@@ -255,3 +255,78 @@ func TestCreateIngress(t *testing.T) {
 	}
 
 }
+
+func TestGetNS(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-namespace", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Namespaces().Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetNS()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-namespace" {
+		t.Errorf("Error while getting ingress")
+	}
+
+}
+
+func TestDeleteNS(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-namespace", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().Namespaces().Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteNS("unit-test-namespace")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteIngress("unit-test-namespace-1")
+	if err == nil {
+		t.Errorf("Error while deleting non existence namespace")
+	}
+
+}
+
+func TestCreateNS(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-namespace", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateNS(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	_, err = cs.CoreV1().Namespaces().Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while creating duplicate namespace")
+	}
+
+}
