@@ -133,3 +133,21 @@ func TestRolesManipulation(t *testing.T) {
 	}
 
 }
+
+func TestSecretManipulation(t *testing.T) {
+
+	clientset := testclient.NewSimpleClientset()
+	input := &v1.Secret{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-secrets", ResourceVersion: "12345"}}
+
+	output, err := clientset.CoreV1().Secrets("unit-test-ns").Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	ManipulateResource(output)
+
+	if output.ResourceVersion != "" {
+		t.Errorf("Manipulation of secrets is failing")
+	}
+
+}
