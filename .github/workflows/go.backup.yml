@@ -30,17 +30,11 @@ jobs:
             dep ensure
         fi
 
-    - name: Clean
-      run: make
-
     - name: Test
-      run: make test
+      run: go test ./... -v .
 
     - name: Test Coverage
-      run: make cover
+      run: go test ./... -cover .
 
     - name: Build
-      run: make build
-
-    - name: Run help command
-      run: bin/linux/kopy --help
+      run: go build -v .
