@@ -31,7 +31,7 @@ jobs:
         fi
 
     - name: Clean
-      run: make
+      run: make clean
 
     - name: Test
       run: make test
