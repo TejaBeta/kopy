@@ -39,13 +39,13 @@ Flags:
 **`Ideas and contributions are always welcome 💪`**
 
 ## Future Improvements
-- Support to take multiple namespaces as input
-- Copy resources into a different auto-generated namespace to avoid collision
+- Support to allow multiple namespaces as input
+- Copy resources into a different auto-generated/user-specified namespace to avoid collision
 
 ## Limitations
 - Copy of stateful-sets is not supported
-- Kubeconfig should have the source and destination configs
-- Kopy has no capabilities to delete or update existing namespace or it's resources, tool leaves it to user with a human friendly message
+- Kubeconfig should have the source and destination contexts embedded
+- Kopy has no capabilities to delete/update existing namespace or it's resources, tool leaves it to user with a human friendly message
 
 ## License
 This project is distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), see [LICENSE](./LICENSE) for more information.
