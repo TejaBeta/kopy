@@ -8,7 +8,7 @@ Imagine there is a provisioned **`K8s`** environment **`dev`**, and a user/devel
 
 In order to avoid collision with other users/namespace resource changes within `K8s` environment, and to make life much more simplier, a tool to `Kopy` all the resources from a particular `K8s` environment to another `K8s` environment, this another environment could be anything from a large scale `K8s` cluster to a minikube hosted `K8s` environment running on a `spot-instance` just for one developer.
 
-`Kopy` is a tool that just fits the above purpose. Hassile free, don't need to have complex CI/CD pipelines or multiple scripts to do the job. A simple, tiny, opensource tool to get things done.
+`Kopy` is a tool that just fits the above purpose. Hassle free, don't need to have complex CI/CD pipelines or multiple scripts to do the job. A simple, tiny, opensource tool to get things done.
 
 Along with the above, there are several other use-cases one can explore.
 
