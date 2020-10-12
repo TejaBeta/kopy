@@ -1,4 +1,4 @@
-# kopy ![Go](https://github.com/TejaBeta/kopy/workflows/Go/badge.svg)
+# kopy ![Go](https://github.com/TejaBeta/kopy/workflows/Go/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/tejabeta/kopy)](https://goreportcard.com/report/github.com/tejabeta/kopy) [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](./LICENSE)
 
 A `kubectl` plugin to copy resources from a particular namespace from one context to another context.
 
