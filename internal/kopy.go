@@ -146,6 +146,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Deployment", v.GetName())
 		}
 	}
 
@@ -156,6 +157,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Configmap", v.GetName())
 		}
 	}
 
@@ -166,6 +168,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Role", v.GetName())
 		}
 	}
 
@@ -176,6 +179,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type RoleBinding", v.GetName())
 		}
 	}
 
@@ -186,6 +190,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Secret", v.GetName())
 		}
 	}
 
@@ -196,6 +201,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Service", v.GetName())
 		}
 	}
 
@@ -206,6 +212,7 @@ func createResources(kOpts *koperator.Options, kResource *kopyResources) error {
 			if err != nil {
 				return err
 			}
+			log.Infof("Copied resource %v of type Ingress", v.GetName())
 		}
 	}
 
