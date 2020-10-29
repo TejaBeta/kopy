@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	appv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -761,7 +762,7 @@ func TestDeletePVC(t *testing.T) {
 
 	err = options.DeletePVC("unit-test-pvc-1")
 	if err == nil {
-		t.Errorf("Error while deleting non-existence service")
+		t.Errorf("Error while deleting non-existence pvc")
 	}
 
 }
@@ -793,6 +794,92 @@ func TestCreatePVC(t *testing.T) {
 	_, err = cs.CoreV1().PersistentVolumeClaims(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
 	if err == nil {
 		t.Errorf("Error while trying to create a duplicate pvc")
+	}
+
+}
+
+func TestGetJob(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &batchv1.Job{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-job", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.BatchV1().Jobs(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetJob()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-job" {
+			t.Errorf("Error while getting job")
+		}
+	}
+
+}
+
+func TestDeleteJob(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &batchv1.Job{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-job", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.BatchV1().Jobs(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteJob("unit-test-job")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeleteJob("unit-test-job-1")
+	if err == nil {
+		t.Errorf("Error while deleting non-existence job")
+	}
+
+}
+
+func TestCreateJob(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &batchv1.Job{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-job", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreateJob(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := cs.BatchV1().Jobs(options.namespace).Get(context.TODO(), "unit-test-job", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-job" {
+		t.Errorf("Error while retreiving created job")
+	}
+
+	_, err = cs.BatchV1().Jobs(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while trying to create a duplicate job")
 	}
 
 }
