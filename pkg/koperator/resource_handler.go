@@ -18,6 +18,7 @@ import (
 	"context"
 
 	appv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -238,5 +239,59 @@ func (kOpts *Options) CreateSVC(service *corev1.Service) (result *corev1.Service
 		CoreV1().
 		Services(kOpts.namespace).
 		Create(context.TODO(), service, metav1.CreateOptions{})
+	return
+}
+
+// GetPVC returns all the pvc in the given namespace and clientset
+func (kOpts *Options) GetPVC() (result *corev1.PersistentVolumeClaimList, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
+}
+
+// DeletePVC method to delete a pvc with the name
+func (kOpts *Options) DeletePVC(name string) (err error) {
+	err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreatePVC method to create a pvc
+func (kOpts *Options) CreatePVC(pvc *corev1.PersistentVolumeClaim) (result *corev1.PersistentVolumeClaim, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		Create(context.TODO(), pvc, metav1.CreateOptions{})
+	return
+}
+
+// GetJob returns all the jobs in the given namespace and clientset
+func (kOpts *Options) GetJob() (result *batchv1.JobList, err error) {
+	result, err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
+}
+
+// DeleteJob method to delete a job with the name
+func (kOpts *Options) DeleteJob(name string) (err error) {
+	err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateJob method to create a pvc
+func (kOpts *Options) CreateJob(job *batchv1.Job) (result *batchv1.Job, err error) {
+	result, err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		Create(context.TODO(), job, metav1.CreateOptions{})
 	return
 }
