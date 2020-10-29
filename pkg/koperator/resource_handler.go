@@ -240,3 +240,30 @@ func (kOpts *Options) CreateSVC(service *corev1.Service) (result *corev1.Service
 		Create(context.TODO(), service, metav1.CreateOptions{})
 	return
 }
+
+// GetPVC returns all the pvc in the given namespace and clientset
+func (kOpts *Options) GetPVC() (result *corev1.PersistentVolumeClaimList, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
+}
+
+// DeletePVC method to delete a pvc with the name
+func (kOpts *Options) DeletePVC(name string) (err error) {
+	err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreatePVC method to create a pvc
+func (kOpts *Options) CreatePVC(pvc *corev1.PersistentVolumeClaim) (result *corev1.PersistentVolumeClaim, err error) {
+	result, err = kOpts.clientset.
+		CoreV1().
+		PersistentVolumeClaims(kOpts.namespace).
+		Create(context.TODO(), pvc, metav1.CreateOptions{})
+	return
+}

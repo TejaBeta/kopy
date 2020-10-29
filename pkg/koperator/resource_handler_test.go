@@ -710,3 +710,89 @@ func TestCreateSVC(t *testing.T) {
 	}
 
 }
+
+func TestGetPVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.PersistentVolumeClaim{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-pvc", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().PersistentVolumeClaims(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := options.GetPVC()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	for _, v := range output.Items {
+		if v.Name != "unit-test-pvc" {
+			t.Errorf("Error while getting pvc")
+		}
+	}
+
+}
+
+func TestDeletePVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.PersistentVolumeClaim{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-pvc", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := cs.CoreV1().PersistentVolumeClaims(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeletePVC("unit-test-pvc")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	err = options.DeletePVC("unit-test-pvc-1")
+	if err == nil {
+		t.Errorf("Error while deleting non-existence service")
+	}
+
+}
+
+func TestCreatePVC(t *testing.T) {
+
+	cs := testclient.NewSimpleClientset()
+	input := &v1.PersistentVolumeClaim{ObjectMeta: metav1.ObjectMeta{Name: "unit-test-pvc", ResourceVersion: "12345"}}
+
+	options := Options{
+		clientset: cs,
+		namespace: "unit-test-namespace",
+	}
+
+	_, err := options.CreatePVC(input)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	output, err := cs.CoreV1().PersistentVolumeClaims(options.namespace).Get(context.TODO(), "unit-test-pvc", metav1.GetOptions{})
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if output.Name != "unit-test-pvc" {
+		t.Errorf("Error while retreiving created pvc")
+	}
+
+	_, err = cs.CoreV1().PersistentVolumeClaims(options.namespace).Create(context.TODO(), input, metav1.CreateOptions{})
+	if err == nil {
+		t.Errorf("Error while trying to create a duplicate pvc")
+	}
+
+}
