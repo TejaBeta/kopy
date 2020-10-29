@@ -47,5 +47,9 @@ Flags:
 - Kubeconfig should have the source and destination contexts embedded
 - Kopy has no capabilities to delete/update existing namespace or it's resources, tool leaves it to user with a human friendly message
 
+## How can I help?
+
+All kind of contributions are always welcome 👏, if you find the tool useful star ⭐️ the project. Always happy to help with any issues or new feature requests. 
+
 ## License
 This project is distributed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0), see [LICENSE](./LICENSE) for more information.
