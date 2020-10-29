@@ -18,6 +18,7 @@ import (
 	"context"
 
 	appv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
@@ -265,5 +266,32 @@ func (kOpts *Options) CreatePVC(pvc *corev1.PersistentVolumeClaim) (result *core
 		CoreV1().
 		PersistentVolumeClaims(kOpts.namespace).
 		Create(context.TODO(), pvc, metav1.CreateOptions{})
+	return
+}
+
+// GetJob returns all the jobs in the given namespace and clientset
+func (kOpts *Options) GetJob() (result *batchv1.JobList, err error) {
+	result, err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		List(context.TODO(), metav1.ListOptions{})
+	return
+}
+
+// DeleteJob method to delete a job with the name
+func (kOpts *Options) DeleteJob(name string) (err error) {
+	err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		Delete(context.TODO(), name, metav1.DeleteOptions{})
+	return
+}
+
+// CreateJob method to create a pvc
+func (kOpts *Options) CreateJob(job *batchv1.Job) (result *batchv1.Job, err error) {
+	result, err = kOpts.clientset.
+		BatchV1().
+		Jobs(kOpts.namespace).
+		Create(context.TODO(), job, metav1.CreateOptions{})
 	return
 }
